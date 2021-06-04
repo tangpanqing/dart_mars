@@ -5,7 +5,7 @@ A library for Dart developers.
 A simple usage example:
 
 ```dart
-import 'package:dart_mars_d/dart_mars_d.dart';
+import 'package:dart_mars/dart_mars.dart';
 
 main() {
   var awesome = new Awesome();

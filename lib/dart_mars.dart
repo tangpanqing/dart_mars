@@ -3,6 +3,6 @@
 /// More dartdocs go here.
 library dart_mars;
 
-export 'src/dart_mars_base.dart';
+export 'src/App.dart';
 
 // TODO: Export any libraries intended for clients of this package.
