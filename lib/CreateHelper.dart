@@ -1,6 +1,9 @@
 import 'dart:io';
-import './template/Bin.dart';
-import './template/Pubspec.dart';
+import 'template/Bin.dart';
+import 'template/Database.dart';
+import 'template/DbConfig.dart';
+import 'template/DbHelper.dart';
+import 'template/Pubspec.dart';
 import 'template/App.dart';
 import 'template/Builder.dart';
 import 'template/Column.dart';
@@ -24,40 +27,39 @@ class CreateHelper {
     /// bin
     'bin/{package}.dart': Bin.content,
 
-    /// bootstrap
-    'bootstrap/App.dart': App.content,
-    'bootstrap/Server.dart': Server.content,
-    'bootstrap/Context.dart': Context.content,
-
-    /// bootstrap db
-    'bootstrap/db/Db.dart': Db.content,
-    'bootstrap/db/Column.dart': Column.content,
-    'bootstrap/db/Builder.dart': Builder.content,
-    'bootstrap/db/Raw.dart': Raw.content,
-
-    /// bootstrap helper
-    'bootstrap/helper/ConvertHelper.dart': ConvertHelper.content,
-    'bootstrap/helper/PrintHelper.dart': PrintHelper.content,
-    'bootstrap/helper/RouteHelper.dart': RouteHelper.content,
-    'bootstrap/helper/VerifyHelper.dart': VerifyHelper.content,
-
     /// env
     'env/dev.yaml': Env.content,
     'env/test.yaml': Env.content,
     'env/prod.yaml': Env.content,
 
+    /// bootstrap
+    'lib/bootstrap/App.dart': App.content,
+    'lib/bootstrap/Server.dart': Server.content,
+    'lib/bootstrap/Context.dart': Context.content,
+
+    /// bootstrap db
+    'lib/bootstrap/db/Db.dart': Db.content,
+    'lib/bootstrap/db/DbConfig.dart': DbConfig.content,
+    'lib/bootstrap/db/DbHelper.dart': DbHelper.content,
+    'lib/bootstrap/db/Column.dart': Column.content,
+    'lib/bootstrap/db/Builder.dart': Builder.content,
+    'lib/bootstrap/db/Raw.dart': Raw.content,
+
+    /// bootstrap helper
+    'lib/bootstrap/helper/ConvertHelper.dart': ConvertHelper.content,
+    'lib/bootstrap/helper/PrintHelper.dart': PrintHelper.content,
+    'lib/bootstrap/helper/RouteHelper.dart': RouteHelper.content,
+    'lib/bootstrap/helper/VerifyHelper.dart': VerifyHelper.content,
+
     /// config
-    'config/route.dart': Route.content,
+    'lib/config/route.dart': Route.content,
+    'lib/config/database.dart': Database.content,
 
     /// controller
-    'app/controller/HomeController.dart': HomeController.content,
-
-    // /// extend
-    // 'extend/model/User.dart': _extend_model_User,
-    // 'extend/service/UserService.dart': _extend_service_UserService
+    'lib/app/controller/HomeController.dart': HomeController.content,
   };
 
-  static void create(String package) {
+  static void run(String package) {
     var path = Directory.current.path.replaceAll('\\', '/');
     var project = path + '/' + package;
     if (!Directory(project).existsSync()) Directory(project).createSync();
@@ -76,11 +78,6 @@ class CreateHelper {
           var file = File(path);
           if (!file.existsSync()) file.createSync();
           file.writeAsStringSync(fileContent);
-
-          //fileContent = fileContent.replaceAll('{package}', name);
-          //print(path);
-          //print(fileContent);
-          //print('------------------------------------------');
         }
       }
     });

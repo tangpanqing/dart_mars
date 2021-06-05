@@ -1,6 +1,6 @@
 class Bin {
   static String content = '''
-  import '../mars/App.dart';
+  import 'package:{package}/bootstrap/App.dart';
   main(List<String> arguments) {
     App.startHttp(arguments);
   }

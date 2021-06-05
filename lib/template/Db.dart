@@ -107,58 +107,54 @@ class Db {
     return this;
   }
 
-  String insertSql(Map<String, dynamic> data) {
-    this.condition["data"] = data;
-    String sql = Builder.insert(this.condition, []);
-    return sql;
-  }
-
-  Future<int> insert(Map<String, dynamic> data) async {
+  Future<int> insert(Map<String, dynamic> data,{bool printSql = false}) async {
     this.condition["data"] = data;
 
     List values = [];
     String sql = Builder.insert(this.condition, values);
+
+    if(printSql){
+      print(sql);
+      print(values);
+    }
 
     int id = await DbHelper.insert(sql, values);
 
     return id;
   }
 
-  String selectSql() {
-    String sql = Builder.select(this.condition, []);
-    return sql;
-  }
-
-  Future<int> count() async {
-    List<Map<String, dynamic>> list = await this.select();
+  Future<int> count({bool printSql = false}) async {
+    List<Map<String, dynamic>> list = await this.select(printSql:printSql);
 
     return list.length;
   }
 
-  Future<double> sum(String field) async {
+  Future<double> sum(String field,{bool printSql = false}) async {
     String fieldName = "sum(" + field + ")";
 
     this.condition["field"] = fieldName;
-    List<Map<String, dynamic>> list = await this.select();
+    List<Map<String, dynamic>> list = await this.select(printSql:printSql);
     double d = list[0][fieldName];
 
     return d;
   }
 
-  Future<List<Map<String, dynamic>>> select() async {
+  Future<List<Map<String, dynamic>>> select({bool printSql = false}) async {
     List values = [];
     String sql = Builder.select(this.condition, values);
 
-    print(sql);
-    print(values);
+    if(printSql){
+      print(sql);
+      print(values);
+    }
 
     List<Map<String, dynamic>> list = await DbHelper.select(sql, values);
 
     return list;
   }
 
-  Future<Map<String, dynamic>> find() async {
-    List<Map<String, dynamic>> list = await this.select();
+  Future<Map<String, dynamic>> find({bool printSql = false}) async {
+    List<Map<String, dynamic>> list = await this.select(printSql:printSql);
 
     if (list.length > 0) {
       return list[0];
@@ -167,33 +163,30 @@ class Db {
     }
   }
 
-  String updateSql(Map<String, dynamic> data) {
-    this.condition["set"] = data;
-    String sql = Builder.update(this.condition, []);
-    return sql;
-  }
-
-  Future<int> update(Map<String, dynamic> data) async {
+  Future<int> update(Map<String, dynamic> data,{bool printSql = false}) async {
     this.condition["set"] = data;
 
     List<Object> values = [];
     String sql = Builder.update(this.condition, values);
-    print(sql);
-    print(values);
+
+    if(printSql){
+      print(sql);
+      print(values);
+    }
 
     int count = await DbHelper.update(sql, values);
-    print(count);
+    
     return count;
   }
 
-  String deleteSql() {
-    String sql = Builder.delete(this.condition, []);
-    return sql;
-  }
-
-  Future<int> delete() async {
+  Future<int> delete({bool printSql = false}) async {
     List<Object> values = [];
     String sql = Builder.delete(this.condition, values);
+
+    if(printSql){
+      print(sql);
+      print(values);
+    }
 
     int count = await DbHelper.update(sql, values);
 
