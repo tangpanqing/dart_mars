@@ -1,6 +1,6 @@
 import 'dart:io';
 
-class TemplateHelper {
+class CreateHelper {
   static final String _pubspec = '''
 name: {package}
 environment:
