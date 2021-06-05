@@ -433,7 +433,7 @@ dbName: example
     // 'extend/service/UserService.dart': _extend_service_UserService
   };
 
-  static void create(String package) {
+  static void run(String package) {
     var path = Directory.current.path.replaceAll('\\', '/');
     var project = path + '/' + package;
     if (!Directory(project).existsSync()) Directory(project).createSync();

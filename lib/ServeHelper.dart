@@ -3,7 +3,7 @@ import 'package:process_run/shell.dart';
 import 'package:yaml/yaml.dart';
 
 class ServeHelper {
-  static void serve(List<String> arguments) {
+  static void run(List<String> arguments) {
     var file =
         File(Directory.current.path.replaceAll('\\', '/') + '/pubspec.yaml');
 
