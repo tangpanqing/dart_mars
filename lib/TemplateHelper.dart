@@ -23,17 +23,17 @@ dependencies:
   class App {
     static void startHttp(List<String> arguments) {
       int port = _getPort(arguments);
-      String mode = _getMode(arguments);
-      Map<String, dynamic> env = _getEnv(_getPath(), mode);
+      String serve = _getServe(arguments);
+      Map<String, dynamic> env = _getEnv(_getPath(), serve);
 
-      Server.http(port, mode, env);
+      Server.http(port, serve, env);
     }
 
     static String _getPath() {
       return Directory.current.path.replaceAll('\\\\', '/');
     }
 
-    static String _getMode(List<String> arguments) {
+    static String _getServe(List<String> arguments) {
       return 'dev';
     }
 
@@ -41,8 +41,8 @@ dependencies:
       return 80;
     }
 
-    static Map<String, dynamic> _getEnv(String path, String mode) {
-      File file = File(path + '/env/' + mode + '.yaml');
+    static Map<String, dynamic> _getEnv(String path, String serve) {
+      File file = File(path + '/env/' + serve + '.yaml');
 
       var doc = loadYaml(file.readAsStringSync());
 
@@ -58,7 +58,7 @@ dependencies:
   import 'helper/PrintHelper.dart';
   import '../config/route.dart';
   class Server {
-    static void http(int port, String mode, Map<String,dynamic> env){
+    static void http(int port, String serve, Map<String,dynamic> env){
       loadRoute();
       PrintHelper.p('----Http服务器准备启动');
       HttpServer.bind('0.0.0.0', port).then((httpServer) async {
@@ -70,7 +70,7 @@ dependencies:
           PrintHelper.t('class Server request.uri.queryParameters = ' +
               request.uri.queryParameters.toString());
 
-          Context ctx = Context(mode:mode, env:env);
+          Context ctx = Context(serve:serve, env:env);
           await ctx.handle(request);
           await RouteHelper.handle(ctx);
           PrintHelper.t('class Server ctx.responseContent = ' + ctx.responseContent);
@@ -85,7 +85,7 @@ dependencies:
   import 'dart:convert';
 
   class Context {
-    String mode;
+    String serve;
 
     Map<String, dynamic> env;
 
@@ -103,7 +103,7 @@ dependencies:
     Map<String, dynamic> session = Map<String, dynamic>();
     Map<String, dynamic> cookie = Map<String, dynamic>();
 
-    Context({this.mode, this.env});
+    Context({this.serve, this.env});
 
     Future<void> handle(HttpRequest request) async {
       this.request = request;
