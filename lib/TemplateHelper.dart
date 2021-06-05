@@ -6,6 +6,7 @@ name: {package}
 environment:
   sdk: '>=2.10.0 <3.0.0'
 dependencies:
+  yaml: ^3.1.0
   ''';
 
   static final String _bin_bin = '''
@@ -17,29 +18,35 @@ dependencies:
   static final String _mars_App = '''
   import 'dart:io';
   import 'Server.dart';
+  import 'package:yaml/yaml.dart';
+
   class App {
-    static void startHttp(List<String> arguments){
+    static void startHttp(List<String> arguments) {
       int port = _getPort(arguments);
       String mode = _getMode(arguments);
-      Map<String,dynamic> env = _getEnv(_getPath(), mode);
+      Map<String, dynamic> env = _getEnv(_getPath(), mode);
 
       Server.http(port, mode, env);
     }
 
-    static String _getPath(){
+    static String _getPath() {
       return Directory.current.path.replaceAll('\\\\', '/');
     }
 
-    static String _getMode(List<String> arguments){
+    static String _getMode(List<String> arguments) {
       return 'dev';
     }
 
-    static int _getPort(List<String> arguments){
+    static int _getPort(List<String> arguments) {
       return 80;
     }
 
-    static Map<String,dynamic> _getEnv(String path, String mode){
-      return Map<String,dynamic>();
+    static Map<String, dynamic> _getEnv(String path, String mode) {
+      File file = File(path + '/env/' + mode + '.yaml');
+
+      var doc = loadYaml(file.readAsStringSync());
+
+      return Map<String, dynamic>.from(doc);
     }
   }
   ''';
@@ -52,14 +59,17 @@ dependencies:
   import '../config/route.dart';
   class Server {
     static void http(int port, String mode, Map<String,dynamic> env){
-      route();
+      loadRoute();
       PrintHelper.p('----Http服务器准备启动');
-      HttpServer.bind('0.0.0.0',port).then((httpServer) async {
-        PrintHelper.p('----Http服务器已经启动');
+      HttpServer.bind('0.0.0.0', port).then((httpServer) async {
+        PrintHelper.p('----Http服务器已经启动 port=' + port.toString());
         await for (HttpRequest request in httpServer) {
+          PrintHelper.p('---------------------------------');
           PrintHelper.p('----Http请求已接收');
           PrintHelper.p('request.uri.path = ' + request.uri.path);
-          PrintHelper.p('request.uri.path = ' + request.uri.path);
+          PrintHelper.p('request.uri.queryParameters = ' +
+              request.uri.queryParameters.toString());
+
           Context ctx = Context(mode:mode, env:env);
           await ctx.handle(request);
           await RouteHelper.handle(ctx);
@@ -345,14 +355,18 @@ dependencies:
   }
   ''';
 
-  static final String _env_dev = '''''';
-  static final String _env_test = '''''';
-  static final String _env_prod = '''''';
+  static final String _env_dev = '''
+dbHost: localhost
+dbPort: 3306
+dbUser: root
+dbPassword: root
+dbName: example
+  ''';
 
   static final String _config_route = '''
   import '../mars/helper/RouteHelper.dart';
   import '../app/controller/HomeController.dart';
-  void route(){
+  void loadRoute(){
     RouteHelper('/home', HomeController.query);
   }
   ''';
@@ -395,10 +409,10 @@ dependencies:
     'mars/helper/PrintHelper.dart': _mars_helper_PrintHelper,
     'mars/helper/RouteHelper.dart': _mars_helper_RouteHelper,
 
-    // /// env
-    // 'env/dev.yaml': _env_dev,
-    // 'env/test.yaml': _env_test,
-    // 'env/prod.yaml': _env_prod,
+    /// env
+    'env/dev.yaml': _env_dev,
+    'env/test.yaml': _env_dev,
+    'env/prod.yaml': _env_dev,
 
     /// config
     'config/route.dart': _config_route,
