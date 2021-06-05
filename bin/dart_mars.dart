@@ -1,6 +1,6 @@
-import '../lib/CreateHelper.dart';
-import '../lib/ServeHelper.dart';
-import '../lib/WelcomeHelper.dart';
+import 'package:dart_mars/CreateHelper.dart';
+import 'package:dart_mars/ServeHelper.dart';
+import 'package:dart_mars/WelcomeHelper.dart';
 
 void main(List<String> arguments) {
   if (arguments.isEmpty) return WelcomeHelper.run();
