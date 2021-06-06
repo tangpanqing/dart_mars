@@ -3,6 +3,7 @@ import 'template/Bin.dart';
 import 'template/Database.dart';
 import 'template/DbConfig.dart';
 import 'template/DbHelper.dart';
+import 'template/LogHelper.dart';
 import 'template/Pubspec.dart';
 import 'template/App.dart';
 import 'template/Builder.dart';
@@ -21,11 +22,17 @@ import 'template/VerifyHelper.dart';
 
 class CreateHelper {
   static Map<String, String> fileMap = {
+    /// readme
+    'README.md': '# {package}',
+
     /// pubspec
     'pubspec.yaml': Pubspec.content,
 
     /// bin
     'bin/{package}.dart': Bin.content,
+
+    /// devops
+    'devops/.gitkeep': '',
 
     /// env
     'env/dev.yaml': Env.content,
@@ -48,6 +55,7 @@ class CreateHelper {
     /// bootstrap helper
     'lib/bootstrap/helper/ConvertHelper.dart': ConvertHelper.content,
     'lib/bootstrap/helper/PrintHelper.dart': PrintHelper.content,
+    'lib/bootstrap/helper/LogHelper.dart': LogHelper.content,
     'lib/bootstrap/helper/RouteHelper.dart': RouteHelper.content,
     'lib/bootstrap/helper/VerifyHelper.dart': VerifyHelper.content,
 
@@ -57,6 +65,12 @@ class CreateHelper {
 
     /// controller
     'lib/app/controller/HomeController.dart': HomeController.content,
+
+    /// extend
+    'lib/extend/.gitkeep': '',
+
+    /// tests
+    'lib/tests/.gitkeep': '',
   };
 
   static void run(String package) {

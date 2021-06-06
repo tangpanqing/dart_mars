@@ -3,7 +3,7 @@ class Route {
   import '../bootstrap/helper/RouteHelper.dart';
   import '../app/controller/HomeController.dart';
   void loadRoute(){
-    RouteHelper('/home', HomeController.query);
+    RouteHelper('/', HomeController.query);
   }
   ''';
 }
