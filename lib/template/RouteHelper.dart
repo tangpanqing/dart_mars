@@ -1,80 +1,80 @@
 class RouteHelper {
   static String content = '''
-  import '../Context.dart';
+import '../Context.dart';
 
-  class RouteItem {
-    String routeMethod;
-    String routePath;
-    Function call;
+class RouteItem {
+  String routeMethod;
+  String routePath;
+  Function call;
 
-    RouteItem(this.routeMethod, this.routePath, this.call);
+  RouteItem(this.routeMethod, this.routePath, this.call);
+}
+
+class RouteHelper {
+  static List<RouteItem> list = [];
+
+  RouteHelper(String routePath, Function call) {
+    addMethod("*", routePath, call);
   }
 
-  class RouteHelper {
-    static List<RouteItem> list = [];
+  static get(String routePath, Function call) {
+    addMethod("GET", routePath, call);
+  }
 
-    RouteHelper(String routePath, Function call) {
-      addMethod("*", routePath, call);
-    }
+  static post(String routePath, Function call) {
+    addMethod("POST", routePath, call);
+  }
 
-    static get(String routePath, Function call) {
-      addMethod("GET", routePath, call);
-    }
+  static put(String routePath, Function call) {
+    addMethod("PUT", routePath, call);
+  }
 
-    static post(String routePath, Function call) {
-      addMethod("POST", routePath, call);
-    }
+  static delete(String routePath, Function call) {
+    addMethod("DELETE", routePath, call);
+  }
 
-    static put(String routePath, Function call) {
-      addMethod("PUT", routePath, call);
-    }
+  static addMethod(String method, String routePath, Function call) {
+    list.add(RouteItem(method, routePath, call));
+  }
 
-    static delete(String routePath, Function call) {
-      addMethod("DELETE", routePath, call);
-    }
+  static bool matchMethod(String routeMethod, String requestMethod) {
+    return requestMethod == routeMethod || "*" == routeMethod;
+  }
 
-    static addMethod(String method, String routePath, Function call) {
-      list.add(RouteItem(method, routePath, call));
-    }
+  static bool matchPath(String routePath, String requestPath) {
+    return routePath == requestPath;
+  }
 
-    static bool matchMethod(String routeMethod, String requestMethod) {
-      return requestMethod == routeMethod || "*" == routeMethod;
-    }
+  static handle(Context ctx) async {
+    bool notMatch = true;
 
-    static bool matchPath(String routePath, String requestPath) {
-      return routePath == requestPath;
-    }
+    for (RouteItem item in RouteHelper.list) {
+      if (matchMethod(item.routeMethod, ctx.request.method) &&
+          matchPath(item.routePath, ctx.request.uri.path)) {
+          notMatch = false;
 
-    static handle(Context ctx) async {
-      bool notMatch = true;
+        //if(!ctx.responseIsClose) await hookBeforeCall(ctx);
 
-      for (RouteItem item in RouteHelper.list) {
-        if (matchMethod(item.routeMethod, ctx.request.method) &&
-            matchPath(item.routePath, ctx.request.uri.path)) {
-            notMatch = false;
-
-          //if(!ctx.responseIsClose) await hookBeforeCall(ctx);
-
-          if(!ctx.responseIsClose){
-            List<dynamic> args = [];
-            args.add(ctx);
-            await Function.apply(item.call, args);
-          }
-
-          //if(!ctx.responseIsClose) await hookAfterCall(ctx);
-
-          if(!ctx.responseIsClose) await ctx.writeAndClose();
-
-          break;
+        if(!ctx.responseIsClose){
+          List<dynamic> args = [];
+          args.add(ctx);
+          await Function.apply(item.call, args);
         }
 
+        //if(!ctx.responseIsClose) await hookAfterCall(ctx);
+
+        if(!ctx.responseIsClose) await ctx.writeAndClose();
+
+        break;
       }
 
-      if (notMatch) {
-        ctx.html("NOT FOUND");
-        await ctx.writeAndClose();
-      }
+    }
+
+    if (notMatch) {
+      ctx.html("NOT FOUND");
+      await ctx.writeAndClose();
     }
   }
+}
   ''';
 }
