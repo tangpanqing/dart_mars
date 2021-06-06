@@ -14,7 +14,19 @@ class App {
 
       Server.http(port, serve, env);
     } catch (e) {
-      LogHelper.e('发现错误,'+e.toString());
+      LogHelper.e('发现错误,' + e.toString());
+    }
+  }
+
+  static void startHttps(List<String> arguments) {
+    try {
+      int port = _getPortHttps(arguments);
+      String serve = _getServe(arguments);
+      Map<String, dynamic> env = _getEnv(_getPath(), serve);
+
+      Server.https(port, serve, env);
+    } catch (e) {
+      LogHelper.e('发现错误,' + e.toString());
     }
   }
 
@@ -28,6 +40,10 @@ class App {
 
   static int _getPort(List<String> arguments) {
     return 80;
+  }
+
+  static int _getPortHttps(List<String> arguments) {
+    return 443;
   }
 
   static Map<String, dynamic> _getEnv(String path, String serve) {

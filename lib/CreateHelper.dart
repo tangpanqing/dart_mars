@@ -39,6 +39,9 @@ class CreateHelper {
     'env/test.yaml': Env.content,
     'env/prod.yaml': Env.content,
 
+    /// cert
+    'cert/.gitkeep': '',
+
     /// bootstrap
     'lib/bootstrap/App.dart': App.content,
     'lib/bootstrap/Server.dart': Server.content,
