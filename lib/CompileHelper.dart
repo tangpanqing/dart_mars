@@ -1,9 +1,9 @@
 import 'package:process_run/shell.dart';
-import 'Until.dart';
+import 'Util.dart';
 
 class CompileHelper {
   static void run(String type) {
-    var str = 'dart compile $type bin\\' + Until.getPackageName() + '.dart';
+    var str = 'dart compile $type bin\\' + Util.getPackageName() + '.dart';
 
     Shell().run(str);
   }

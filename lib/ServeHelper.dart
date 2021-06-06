@@ -1,10 +1,10 @@
 import 'package:process_run/shell.dart';
-import 'Until.dart';
+import 'Util.dart';
 
 class ServeHelper {
   static void run(List<String> arguments) {
     var str = 'dart run bin\\' +
-        Until.getPackageName() +
+        Util.getPackageName() +
         '.dart ' +
         arguments.join(' ');
 
