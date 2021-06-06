@@ -3,7 +3,7 @@ class Server {
 import 'dart:io';
 import 'Context.dart';
 import 'helper/RouteHelper.dart';
-import 'helper/PrintHelper.dart';
+import 'helper/LogHelper.dart';
 import '../config/route.dart';
 import '../config/database.dart';
 
@@ -12,27 +12,25 @@ class Server {
     loadRoute();
     loadDatabase(env);
 
-    PrintHelper.p('----Http服务器准备启动');
+    LogHelper.e('----Http服务器准备启动');
     HttpServer.bind('0.0.0.0', port).then((httpServer) async {
-      PrintHelper.p('----Http服务器已经启动 port=' + port.toString());
+      LogHelper.e('----Http服务器已经启动 port=' + port.toString());
       await for (HttpRequest request in httpServer) {
-        PrintHelper.p('---------------------');
-        PrintHelper.p('----Http请求已接收----');
-        PrintHelper.t('class Server request.uri.path = ' + request.uri.path);
-        PrintHelper.t('class Server request.uri.queryParameters = ' +
+        LogHelper.e('---------------------');
+        LogHelper.e('----Http请求已接收----');
+        LogHelper.e('class Server request.uri.path = ' + request.uri.path);
+        LogHelper.e('class Server request.uri.queryParameters = ' +
             request.uri.queryParameters.toString());
 
         Context ctx = Context(serve: serve, env: env);
         await ctx.handle(request);
         await RouteHelper.handle(ctx);
-        PrintHelper.t(
+        LogHelper.e(
             'class Server ctx.responseContent = ' + ctx.responseContent);
-        PrintHelper.p('----Http请求已处理----');
+        LogHelper.e('----Http请求已处理----');
       }
     });
   }
 }
-
-
   ''';
 }

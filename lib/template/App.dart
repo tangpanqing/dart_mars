@@ -14,7 +14,7 @@ class App {
 
       Server.http(port, serve, env);
     } catch (e) {
-      LogHelper.e(e.toString());
+      LogHelper.e('发现错误,'+e.toString());
     }
   }
 
