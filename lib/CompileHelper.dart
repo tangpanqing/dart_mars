@@ -1,9 +1,10 @@
-import 'dart:io';
 import 'package:process_run/shell.dart';
-import 'package:yaml/yaml.dart';
+import 'Util.dart';
 
 class CompileHelper {
-  static void run(String name) {
-    print('CompileHelper');
+  static void run(String type) {
+    var str = 'dart compile $type bin\\' + Util.getPackageName() + '.dart';
+
+    Shell().run(str);
   }
 }

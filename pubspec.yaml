@@ -1,7 +1,7 @@
 name: dart_mars
 description: A sample command-line application.
-# version: 1.0.0
-# homepage: https://www.example.com
+version: 1.0.0
+homepage: https://github.com/tangpanqing/dart_mars
 
 environment:
   sdk: '>=2.10.0 <3.0.0'
@@ -9,6 +9,7 @@ environment:
 dependencies:
 #  path: ^1.7.0
   process_run: ^0.12.1
+  
   yaml: ^3.1.0
 
 dev_dependencies:
