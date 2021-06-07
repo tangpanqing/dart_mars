@@ -2,6 +2,7 @@ class App {
   static String content = '''
 import 'dart:io';
 import 'Server.dart';
+import 'helper/CommonHelper.dart';
 import 'helper/LogHelper.dart';
 import 'package:yaml/yaml.dart';
 
@@ -10,7 +11,7 @@ class App {
     try {
       int port = _getPort(arguments);
       String serve = _getServe(arguments);
-      Map<String, dynamic> env = _getEnv(_getPath(), serve);
+      Map<String, dynamic> env = _getEnv(CommonHelper.rootPath(), serve);
 
       Server.http(port, serve, env);
     } catch (e) {
@@ -22,16 +23,12 @@ class App {
     try {
       int port = _getPortHttps(arguments);
       String serve = _getServe(arguments);
-      Map<String, dynamic> env = _getEnv(_getPath(), serve);
+      Map<String, dynamic> env = _getEnv(CommonHelper.rootPath(), serve);
 
       Server.https(port, serve, env);
     } catch (e) {
       LogHelper.e('发现错误,' + e.toString());
     }
-  }
-
-  static String _getPath() {
-    return Directory.current.path.replaceAll('\\\\', '/');
   }
 
   static String _getServe(List<String> arguments) {

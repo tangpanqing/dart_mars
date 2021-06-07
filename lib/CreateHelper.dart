@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'template/Bin.dart';
+import 'template/CommonHelper.dart';
 import 'template/Database.dart';
 import 'template/DbConfig.dart';
 import 'template/DbHelper.dart';
@@ -34,6 +35,9 @@ class CreateHelper {
     /// devops
     'devops/.gitkeep': '',
 
+    /// public
+    'public/hello.html': '<h1>hello world</h1>',
+
     /// env
     'env/dev.yaml': Env.content,
     'env/test.yaml': Env.content,
@@ -61,6 +65,7 @@ class CreateHelper {
     'lib/bootstrap/helper/LogHelper.dart': LogHelper.content,
     'lib/bootstrap/helper/RouteHelper.dart': RouteHelper.content,
     'lib/bootstrap/helper/VerifyHelper.dart': VerifyHelper.content,
+    'lib/bootstrap/helper/CommonHelper.dart': CommonHelper.content,
 
     /// config
     'lib/config/route.dart': Route.content,
