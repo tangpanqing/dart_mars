@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:yaml/yaml.dart';
 
-class Util {
+class PackageHelper {
   static List<String> typeList = ['exe', 'aot', 'jit', 'kernel', 'js'];
 
   static String getPackageName() {

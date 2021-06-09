@@ -1,9 +1,9 @@
 import 'package:process_run/shell.dart';
-import '../util/Util.dart';
+import 'PackageHelper.dart';
 
 class RunHelper {
   static void run(String type) {
-    var str = 'dart run bin\\' + Util.getPackageName() + '.dart';
+    var str = 'dart run bin\\' + PackageHelper.getPackageName() + '.dart';
     Shell().run(str);
   }
 }
