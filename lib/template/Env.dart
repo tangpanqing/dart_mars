@@ -11,5 +11,5 @@ dbName: example
 sslKeyName: cert/key.pem
 sslCertName: cert/cert.pem
 sslPassword: 
-  ''';
+''';
 }

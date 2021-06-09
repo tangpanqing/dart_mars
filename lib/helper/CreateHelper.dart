@@ -1,25 +1,25 @@
 import 'dart:io';
-import 'template/Bin.dart';
-import 'template/CommonHelper.dart';
-import 'template/Database.dart';
-import 'template/DbConfig.dart';
-import 'template/DbHelper.dart';
-import 'template/LogHelper.dart';
-import 'template/Pubspec.dart';
-import 'template/App.dart';
-import 'template/Builder.dart';
-import 'template/Column.dart';
-import 'template/Context.dart';
-import 'template/ConvertHelper.dart';
-import 'template/Db.dart';
-import 'template/Env.dart';
-import 'template/HomeController.dart';
-import 'template/PrintHelper.dart';
-import 'template/Raw.dart';
-import 'template/Route.dart';
-import 'template/RouteHelper.dart';
-import 'template/Server.dart';
-import 'template/VerifyHelper.dart';
+import '../template/Bin.dart';
+import '../template/CommonHelper.dart';
+import '../template/Database.dart';
+import '../template/DbConfig.dart';
+import '../template/DbHelper.dart';
+import '../template/LogHelper.dart';
+import '../template/Pubspec.dart';
+import '../template/App.dart';
+import '../template/Builder.dart';
+import '../template/Column.dart';
+import '../template/Context.dart';
+import '../template/ConvertHelper.dart';
+import '../template/Db.dart';
+import '../template/Env.dart';
+import '../template/HomeController.dart';
+import '../template/PrintHelper.dart';
+import '../template/Raw.dart';
+import '../template/Route.dart';
+import '../template/RouteHelper.dart';
+import '../template/Server.dart';
+import '../template/VerifyHelper.dart';
 
 class CreateHelper {
   static Map<String, String> fileMap = {

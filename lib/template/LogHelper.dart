@@ -4,7 +4,7 @@ import 'dart:io';
 import 'CommonHelper.dart';
 
 class LogHelper {
-  static void e(String text) {
+  static void i(String text) {
     File file = File(CommonHelper.rootPath() + '/log.error.txt');
     if (!file.existsSync()) file.createSync();
     String str = DateTime.now().toString() + ' ' + text;

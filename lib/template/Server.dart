@@ -12,7 +12,7 @@ import '../config/database.dart';
 class Server {
   static void http(int port, String serve, Map<String, dynamic> env) {
     loadRoute();
-    loadDatabase(env);
+    loadDatabase(serve, env);
 
     HttpServer.bind('0.0.0.0', port).then((httpServer) async {
       httpServer.autoCompress = true;
@@ -22,7 +22,7 @@ class Server {
 
   static void https(int port, String serve, Map<String, dynamic> env) {
     loadRoute();
-    loadDatabase(env);
+    loadDatabase(serve, env);
 
     SecurityContext securityContext = SecurityContext();
 
@@ -35,12 +35,12 @@ class Server {
 
   static Future<void> _http(HttpServer httpServer, int port, String serve,
       Map<String, dynamic> env) async {
-    LogHelper.e('----Http服务器已经启动 port=' + port.toString());
+    LogHelper.i('----Http Server start, port=' + port.toString());
     await for (HttpRequest request in httpServer) {
-      LogHelper.e('---------------------');
-      LogHelper.e('----Http请求已接收----');
-      LogHelper.e('class Server request.uri.path = ' + request.uri.path);
-      LogHelper.e('class Server request.uri.queryParameters = ' +
+      LogHelper.i('---------------------');
+      LogHelper.i('----Http Request start----');
+      LogHelper.i('class Server request.uri.path = ' + request.uri.path);
+      LogHelper.i('class Server request.uri.queryParameters = ' +
           request.uri.queryParameters.toString());
 
       if (_isFile(request)) {
@@ -49,11 +49,11 @@ class Server {
         Context ctx = Context(serve: serve, env: env);
         await ctx.handle(request);
         await RouteHelper.handle(ctx);
-        LogHelper.e(
+        LogHelper.i(
             'class Server ctx.responseContent = ' + ctx.responseContent);
       }
 
-      LogHelper.e('----Http请求已处理----');
+      LogHelper.i('----Http Request end----');
     }
   }
 

@@ -110,7 +110,6 @@ class Context {
     response.headers.contentType = responseType;
     response.write(responseContent);
     await response.close();
-
     responseIsClose = true;
   }
 

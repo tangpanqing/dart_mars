@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:yaml/yaml.dart';
 
 class Util {
+  static List<String> typeList = ['exe', 'aot', 'jit', 'kernel', 'js'];
+
   static String getPackageName() {
     var file =
         File(Directory.current.path.replaceAll('\\', '/') + '/pubspec.yaml');

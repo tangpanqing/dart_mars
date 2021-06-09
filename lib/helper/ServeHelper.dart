@@ -1,5 +1,5 @@
 import 'package:process_run/shell.dart';
-import 'Util.dart';
+import '../util/Util.dart';
 
 class ServeHelper {
   static void run(List<String> arguments) {
