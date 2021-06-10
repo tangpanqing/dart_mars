@@ -20,6 +20,7 @@ import '../template/Route.dart';
 import '../template/RouteHelper.dart';
 import '../template/Server.dart';
 import '../template/VerifyHelper.dart';
+import '../template/RouteMeta.dart';
 
 class CreateHelper {
   static Map<String, String> fileMap = {
@@ -66,6 +67,8 @@ class CreateHelper {
     'lib/bootstrap/helper/RouteHelper.dart': RouteHelper.content,
     'lib/bootstrap/helper/VerifyHelper.dart': VerifyHelper.content,
     'lib/bootstrap/helper/CommonHelper.dart': CommonHelper.content,
+
+    'lib/bootstrap/meta/RouteMeta.dart': RouteMeta.content,
 
     /// config
     'lib/config/route.dart': Route.content,
