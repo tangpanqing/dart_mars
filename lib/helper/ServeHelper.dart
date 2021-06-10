@@ -4,12 +4,13 @@ import 'dart:io';
 import 'package:process_run/shell.dart';
 import 'PackageHelper.dart';
 
-class RouteStru {
+class RouteStruct {
   String path;
   String method;
+  String fileName;
   String functionName;
 
-  RouteStru(this.path, this.method, this.functionName);
+  RouteStruct(this.path, this.method, this.fileName, this.functionName);
 }
 
 class ServeHelper {
@@ -19,54 +20,19 @@ class ServeHelper {
   }
 
   static void _analyseFile() {
-    var appPath = PackageHelper.getRootPath() + '/lib/app';
-
     List<String> fileList = [];
+    String appPath = PackageHelper.getRootPath() + '/lib/app';
+
     _allFile(fileList, appPath);
 
-    List<RouteStru> routeStruList = [];
+    List<RouteStruct> routeStructList = [];
+
     fileList.forEach((fileName) {
       var fileContent = File(fileName).readAsStringSync();
-
-      RegExp exp = RegExp(r"@RouteMeta\((.*?)\).*?void\s+(\w+)\(.*?{",
-          multiLine: true, dotAll: true);
-
-      Iterable<Match> mobiles = exp.allMatches(fileContent);
-      for (Match m in mobiles) {
-        List<String> l = m.group(1).toString().split(',');
-        String path = l[0].replaceAll('\'', '').replaceAll(' ', '');
-        String method = l[1].replaceAll('\'', '').replaceAll(' ', '');
-        String functionName =
-            fileName.replaceAll('.dart', '.') + m.group(2).toString();
-
-        routeStruList.add(RouteStru(path, method, functionName));
-      }
+      _handleRouteStructList(fileName, fileContent, routeStructList);
     });
 
-    List<String> routeContentList = [];
-    routeStruList.forEach((routeStru) {
-      routeContentList.add('RouteHelper(\'' +
-          routeStru.path +
-          '\',' +
-          routeStru.functionName +
-          ');');
-    });
-
-    var routePath = PackageHelper.getRootPath() + '/lib/config/route.dart';
-    String content = File(routePath).readAsStringSync();
-    File(routePath).writeAsStringSync(content.replaceAll('}', ''));
-
-    routeStruList.forEach((element) {
-      File(routePath).writeAsStringSync(
-          '  RouteHelper(\'' +
-              element.path +
-              '\', ' +
-              element.functionName.split('/').last +
-              ');\n',
-          mode: FileMode.append);
-    });
-
-    File(routePath).writeAsStringSync('}', mode: FileMode.append);
+    _replaceRouteConfig(routeStructList);
   }
 
   static void _allFile(List<String> fileList, String path) {
@@ -86,5 +52,81 @@ class ServeHelper {
         arguments.join(' ');
 
     Shell().run(str);
+  }
+
+  static void _handleRouteStructList(
+      String fileName, String fileContent, List<RouteStruct> routeStructList) {
+    RegExp exp = RegExp(r"@RouteMeta\((.*?)\).*?void\s+(\w+)\(.*?{",
+        multiLine: true, dotAll: true);
+
+    Iterable<Match> matchs = exp.allMatches(fileContent);
+
+    for (Match m in matchs) {
+      List<String> l = m.group(1).toString().split(',');
+      String path = l[0].replaceAll('\'', '').replaceAll(' ', '');
+      String method = l[1].replaceAll('\'', '').replaceAll(' ', '');
+      String functionName = m.group(2).toString();
+
+      routeStructList.add(RouteStruct(path, method, fileName, functionName));
+    }
+  }
+
+  static void _replaceRouteConfig(List<RouteStruct> routeStructList) {
+    var routePath = PackageHelper.getRootPath() + '/lib/config/route.dart';
+    File file = File(routePath);
+
+    List<String> fileNameList = [];
+    routeStructList.forEach((element) {
+      if (!fileNameList.contains(element.fileName))
+        fileNameList.add(element.fileName);
+    });
+
+    file.writeAsStringSync('');
+    file.writeAsStringSync('import \'../bootstrap/helper/RouteHelper.dart\';\n',
+        mode: FileMode.append);
+
+    fileNameList.forEach((element) {
+      element = element.replaceAll('D:/vs_project/dart_mars_demo_25/lib/', '');
+      file.writeAsStringSync(
+          'import \'../' + element + '\' as ' + _fileTag(element) + ';\n',
+          mode: FileMode.append);
+    });
+
+    file.writeAsStringSync('\n', mode: FileMode.append);
+    file.writeAsStringSync('void loadRoute(){\n', mode: FileMode.append);
+
+    routeStructList.forEach((element) {
+      file.writeAsStringSync('  ', mode: FileMode.append);
+
+      file.writeAsStringSync(_routeLine(element) + '\n', mode: FileMode.append);
+    });
+
+    file.writeAsStringSync('}', mode: FileMode.append);
+  }
+
+  static String _fileTag(String element) {
+    element = element.replaceAll('D:/vs_project/dart_mars_demo_25/lib/', '');
+    element = element.replaceAll('.dart', '');
+    element = element.replaceAll('/', '_');
+    return element;
+  }
+
+  static String _routeLine(RouteStruct element) {
+    String tag = _fileTag(element.fileName);
+    String file = tag.split('_').last;
+
+    var sb = StringBuffer();
+    sb
+      ..write('RouteHelper(')
+      ..write('\'')
+      ..write(element.path)
+      ..write('\', ')
+      ..write(tag)
+      ..write('.')
+      ..write(file)
+      ..write('.')
+      ..write(element.functionName)
+      ..write(');');
+    return sb.toString();
   }
 }
