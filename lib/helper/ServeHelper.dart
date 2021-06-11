@@ -23,6 +23,7 @@ class ServeHelper {
     }
   }
 
+  // ignore: omit_local_variable_types
   static bool _analyseFile() {
     List<String> fileList = [];
     String appPath = PackageHelper.getRootPath() + '/lib/app';
@@ -62,7 +63,7 @@ class ServeHelper {
 
   static void _handleRouteStructList(
       String fileName, String fileContent, List<RouteStruct> routeStructList) {
-    RegExp exp = RegExp(r"@RouteMeta\((.*?)\).*?void\s+(\w+)\(.*?{",
+    RegExp exp = RegExp(r'@RouteMeta\((.*?)\).*?void\s+(\w+)\(.*?{',
         multiLine: true, dotAll: true);
 
     Iterable<Match> matchs = exp.allMatches(fileContent);
@@ -79,7 +80,7 @@ class ServeHelper {
 
   static bool _checkRouteStruct(List<RouteStruct> routeStructList) {
     bool isPass = true;
-    Map<String, List<String>> map = Map<String, List<String>>();
+    Map<String, List<String>> map = {};
 
     routeStructList.forEach((element) {
       if (!map.containsKey(element.path)) map[element.path] = [];
@@ -107,8 +108,9 @@ class ServeHelper {
 
     List<String> fileNameList = [];
     routeStructList.forEach((element) {
-      if (!fileNameList.contains(element.fileName))
+      if (!fileNameList.contains(element.fileName)) {
         fileNameList.add(element.fileName);
+      }
     });
 
     file.writeAsStringSync('');
