@@ -12,7 +12,7 @@ class Context {
   
   HttpResponse response;
   String responseContent;
-  bool responseIsClose = false;
+  bool _responseIsClose = false;
 
   String method;
   ContentType responseType;
@@ -110,8 +110,12 @@ class Context {
     response.headers.contentType = responseType;
     response.write(responseContent);
     await response.close();
-    responseIsClose = true;
+    _responseIsClose = true;
   }
+
+  bool responseIsClose() => _responseIsClose;
+
+  String getRequestPath() => request.uri.path;
 
   void showJson(num code, String msg, dynamic data) {
     Map<String, dynamic> map = {"code": code, "msg": msg, "data": data};

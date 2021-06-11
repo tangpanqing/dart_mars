@@ -90,7 +90,7 @@ class ServeHelper {
     map.forEach((key, value) {
       if (value.length > 1) {
         isPass = false;
-        print('duplicate request path ' +
+        print('duplicate route path ' +
             key +
             ' was found, please check it from these files:');
         value.forEach((element) {

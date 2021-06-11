@@ -1,6 +1,7 @@
 class RouteHelper {
   static String content = '''
 import '../Context.dart';
+import '../../config/hook.dart';
 
 class RouteItem {
   String routeMethod;
@@ -53,17 +54,17 @@ class RouteHelper {
           _matchPath(item.routePath, ctx.request.uri.path)) {
         notMatch = false;
 
-        //if(!ctx.responseIsClose) await hookBeforeCall(ctx);
+        if (!ctx.responseIsClose()) await hookBeforeCall(ctx);
 
-        if (!ctx.responseIsClose) {
+        if (!ctx.responseIsClose()) {
           List<dynamic> args = [];
           args.add(ctx);
           await Function.apply(item.call, args);
         }
 
-        //if(!ctx.responseIsClose) await hookAfterCall(ctx);
+        if (!ctx.responseIsClose()) await hookAfterCall(ctx);
 
-        if (!ctx.responseIsClose) await ctx.writeAndClose();
+        if (!ctx.responseIsClose()) await ctx.writeAndClose();
 
         break;
       }

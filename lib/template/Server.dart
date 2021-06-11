@@ -37,7 +37,9 @@ class Server {
 
   static Future<void> _http(HttpServer httpServer, int port, String serve,
       Map<String, dynamic> env) async {
-    LogHelper.i('----Http Server start, port=' + port.toString());
+    LogHelper.i('----Http Server has start, port=' + port.toString());
+    LogHelper.i('----Env type is ' + serve);
+    LogHelper.i('----Open browser and vist http://127.0.0.1:' + port.toString() + ' , you can see some info');
     await for (HttpRequest request in httpServer) {
       LogHelper.i('---------------------');
       LogHelper.i('----Http Request start----');

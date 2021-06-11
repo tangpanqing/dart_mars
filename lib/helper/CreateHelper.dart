@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../template/Hook.dart';
 import '../template/Bin.dart';
 import '../template/CommonHelper.dart';
 import '../template/Database.dart';
@@ -48,6 +49,9 @@ class CreateHelper {
     'cert/key.pem': '',
     'cert/cert.pem': '',
 
+    /// log
+    'log/log.txt': '',
+
     /// bootstrap
     'lib/bootstrap/App.dart': App.content,
     'lib/bootstrap/Server.dart': Server.content,
@@ -73,6 +77,7 @@ class CreateHelper {
 
     /// config
     'lib/config/route.dart': Route.content,
+    'lib/config/hook.dart': Hook.content,
     'lib/config/database.dart': Database.content,
 
     /// controller
@@ -82,13 +87,24 @@ class CreateHelper {
     'lib/extend/.gitkeep': '',
 
     /// tests
-    'lib/tests/.gitkeep': '',
+    'lib/tests/test_main.dart': '''
+void main(){
+  print('you can do some test in here');
+}
+    ''',
   };
 
   static void run(String package) {
     var path = Directory.current.path.replaceAll('\\', '/');
     var project = path + '/' + package;
-    if (!Directory(project).existsSync()) Directory(project).createSync();
+    if (!Directory(project).existsSync()) {
+      Directory(project).createSync();
+    } else {
+      print('dir ' +
+          package +
+          ' is already exists, please chose other or delete it then try again');
+      return;
+    }
 
     fileMap.forEach((filePath, fileContent) {
       var filePathArr = filePath.split('/');
@@ -109,5 +125,12 @@ class CreateHelper {
         }
       }
     });
+
+    print('project ' + package + ' has been created');
+    print('you can change dir with command: cd ' + package);
+    print(
+        'and then get dependent with command: dart pub global run dart_mars --get');
+    print(
+        'and then start it with command: dart pub global run dart_mars --serve dev');
   }
 }
