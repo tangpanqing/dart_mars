@@ -82,11 +82,22 @@ class ServeHelper {
     });
 
     file.writeAsStringSync('');
+    file.writeAsStringSync('/// \n', mode: FileMode.append);
+    file.writeAsStringSync(
+        '/// don\'t modify this file yourself, this file will be replace by program\n',
+        mode: FileMode.append);
+    file.writeAsStringSync(
+        '/// for more infomation, see dart pub global run dart_mars --serve \n',
+        mode: FileMode.append);
+    file.writeAsStringSync(
+        '/// last replace time ' + DateTime.now().toString() + ' \n',
+        mode: FileMode.append);
+    file.writeAsStringSync('/// \n', mode: FileMode.append);
     file.writeAsStringSync('import \'../bootstrap/helper/RouteHelper.dart\';\n',
         mode: FileMode.append);
 
     fileNameList.forEach((element) {
-      element = element.replaceAll('D:/vs_project/dart_mars_demo_25/lib/', '');
+      element = element.replaceAll(PackageHelper.getRootPath() + '/lib/', '');
       file.writeAsStringSync(
           'import \'../' + element + '\' as ' + _fileTag(element) + ';\n',
           mode: FileMode.append);
@@ -105,7 +116,7 @@ class ServeHelper {
   }
 
   static String _fileTag(String element) {
-    element = element.replaceAll('D:/vs_project/dart_mars_demo_25/lib/', '');
+    element = element.replaceAll(PackageHelper.getRootPath() + '/lib/', '');
     element = element.replaceAll('.dart', '');
     element = element.replaceAll('/', '_');
     return element;
