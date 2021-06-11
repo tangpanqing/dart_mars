@@ -14,34 +14,34 @@ class RouteHelper {
   static List<RouteItem> list = [];
 
   RouteHelper(String routePath, Function call) {
-    addMethod("*", routePath, call);
+    add("*", routePath, call);
   }
 
   static get(String routePath, Function call) {
-    addMethod("GET", routePath, call);
+    add("GET", routePath, call);
   }
 
   static post(String routePath, Function call) {
-    addMethod("POST", routePath, call);
+    add("POST", routePath, call);
   }
 
   static put(String routePath, Function call) {
-    addMethod("PUT", routePath, call);
+    add("PUT", routePath, call);
   }
 
   static delete(String routePath, Function call) {
-    addMethod("DELETE", routePath, call);
+    add("DELETE", routePath, call);
   }
 
-  static addMethod(String method, String routePath, Function call) {
+  static add(String method, String routePath, Function call) {
     list.add(RouteItem(method, routePath, call));
   }
 
-  static bool matchMethod(String routeMethod, String requestMethod) {
-    return requestMethod == routeMethod || "*" == routeMethod;
+  static bool _matchMethod(String routeMethod, String requestMethod) {
+    return routeMethod.split('|').contains(requestMethod) || "*" == routeMethod;
   }
 
-  static bool matchPath(String routePath, String requestPath) {
+  static bool _matchPath(String routePath, String requestPath) {
     return routePath == requestPath;
   }
 
@@ -49,13 +49,13 @@ class RouteHelper {
     bool notMatch = true;
 
     for (RouteItem item in RouteHelper.list) {
-      if (matchMethod(item.routeMethod, ctx.request.method) &&
-          matchPath(item.routePath, ctx.request.uri.path)) {
-          notMatch = false;
+      if (_matchMethod(item.routeMethod, ctx.request.method) &&
+          _matchPath(item.routePath, ctx.request.uri.path)) {
+        notMatch = false;
 
         //if(!ctx.responseIsClose) await hookBeforeCall(ctx);
 
-        if(!ctx.responseIsClose){
+        if (!ctx.responseIsClose) {
           List<dynamic> args = [];
           args.add(ctx);
           await Function.apply(item.call, args);
@@ -63,11 +63,10 @@ class RouteHelper {
 
         //if(!ctx.responseIsClose) await hookAfterCall(ctx);
 
-        if(!ctx.responseIsClose) await ctx.writeAndClose();
+        if (!ctx.responseIsClose) await ctx.writeAndClose();
 
         break;
       }
-
     }
 
     if (notMatch) {

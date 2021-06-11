@@ -1,15 +1,15 @@
-class DbHelper {
+class DbConnection {
   static String content = '''
 import 'dart:core';
 import 'dart:async';
 import 'package:mysql1/mysql1.dart';
 import 'DbConfig.dart';
 
-class DbHelper {
-  DbHelper._privateConstructor();
+class DbConnection {
+  DbConnection._privateConstructor();
 
-  static final DbHelper _instance = DbHelper._privateConstructor();
-  factory DbHelper() => _instance;
+  static final DbConnection _instance = DbConnection._privateConstructor();
+  factory DbConnection() => _instance;
 
   static MySqlConnection conn;
 

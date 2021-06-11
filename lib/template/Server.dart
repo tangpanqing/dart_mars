@@ -25,6 +25,8 @@ class Server {
     loadDatabase(serve, env);
 
     SecurityContext securityContext = SecurityContext();
+    securityContext.useCertificateChain(CommonHelper.rootPath() + '/' + env['sslCertName'].toString());
+    securityContext.usePrivateKey(CommonHelper.rootPath() + '/' + env['sslKeyName'].toString(), password: env['sslPassword'].toString());
 
     HttpServer.bindSecure('0.0.0.0', port, securityContext)
         .then((httpServer) async {
@@ -43,8 +45,16 @@ class Server {
       LogHelper.i('class Server request.uri.queryParameters = ' +
           request.uri.queryParameters.toString());
 
-      if (_isFile(request)) {
-        await _handleFile(request);
+      bool isFile = request.uri.path.contains('.');
+      bool isExists = false;
+      File file;
+      if (isFile) {
+        file = File(CommonHelper.rootPath() + '/public' + request.uri.path);
+        isExists = file.existsSync();
+      }
+
+      if (isFile && isExists) {
+        await _handleFile(request, file);
       } else {
         Context ctx = Context(serve: serve, env: env);
         await ctx.handle(request);
@@ -57,23 +67,13 @@ class Server {
     }
   }
 
-  static bool _isFile(HttpRequest request) {
-    return request.uri.path.contains('.');
-  }
-
-  static Future<void> _handleFile(HttpRequest request) async {
-    File file = File(CommonHelper.rootPath() + '/public' + request.uri.path);
-
-    if (!file.existsSync()) {
-      request.response.statusCode = HttpStatus.notFound;
-    } else {
-      try {
-        request.response.statusCode = HttpStatus.ok;
-        request.response.headers.contentType = _ContentType(request);
-        await request.response.addStream(file.openRead());
-      } catch (e) {
-        request.response.statusCode = HttpStatus.internalServerError;
-      }
+  static Future<void> _handleFile(HttpRequest request, File file) async {
+    try {
+      request.response.statusCode = HttpStatus.ok;
+      request.response.headers.contentType = _ContentType(request);
+      await request.response.addStream(file.openRead());
+    } catch (e) {
+      request.response.statusCode = HttpStatus.internalServerError;
     }
 
     await request.response.close();
@@ -106,6 +106,5 @@ class Server {
     return contentType;
   }
 }
-
   ''';
 }

@@ -3,11 +3,11 @@ import '../template/Bin.dart';
 import '../template/CommonHelper.dart';
 import '../template/Database.dart';
 import '../template/DbConfig.dart';
-import '../template/DbHelper.dart';
+import '../template/DbConnection.dart';
 import '../template/LogHelper.dart';
 import '../template/Pubspec.dart';
 import '../template/App.dart';
-import '../template/Builder.dart';
+import '../template/SqlBuilder.dart';
 import '../template/Column.dart';
 import '../template/Context.dart';
 import '../template/ConvertHelper.dart';
@@ -45,7 +45,8 @@ class CreateHelper {
     'env/prod.yaml': Env.content,
 
     /// cert
-    'cert/.gitkeep': '',
+    'cert/key.pem': '',
+    'cert/cert.pem': '',
 
     /// bootstrap
     'lib/bootstrap/App.dart': App.content,
@@ -55,9 +56,9 @@ class CreateHelper {
     /// bootstrap db
     'lib/bootstrap/db/Db.dart': Db.content,
     'lib/bootstrap/db/DbConfig.dart': DbConfig.content,
-    'lib/bootstrap/db/DbHelper.dart': DbHelper.content,
+    'lib/bootstrap/db/DbConnection.dart': DbConnection.content,
     'lib/bootstrap/db/Column.dart': Column.content,
-    'lib/bootstrap/db/Builder.dart': Builder.content,
+    'lib/bootstrap/db/SqlBuilder.dart': SqlBuilder.content,
     'lib/bootstrap/db/Raw.dart': Raw.content,
 
     /// bootstrap helper
@@ -95,6 +96,8 @@ class CreateHelper {
         var path = project + '/' + filePathArr.getRange(0, i + 1).join('/');
         path = path.replaceAll('{package}', package);
         fileContent = fileContent.replaceAll('{package}', package);
+        fileContent =
+            fileContent.replaceAll('{time}', DateTime.now().toString());
 
         if (!path.contains('.')) {
           var directory = Directory(path);

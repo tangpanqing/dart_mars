@@ -1,6 +1,6 @@
 class Database {
   static String content = '''
-import '../bootstrap/db/DbConfig.dart';
+import 'package:{package}/bootstrap/db/DbConfig.dart';
 
 void loadDatabase(String envType, Map<String, dynamic> env) {
   DbConfig.dbHost = env['dbHost'].toString();

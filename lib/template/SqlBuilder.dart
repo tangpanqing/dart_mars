@@ -1,9 +1,9 @@
-class Builder {
+class SqlBuilder {
   static String content = '''
 import 'Column.dart';
 import 'Raw.dart';
 
-class Builder {
+class SqlBuilder {
   static String selectSql =
       'SELECT%DISTINCT%%EXTRA% %FIELD% FROM %TABLE%%ALIAS%%FORCE%%JOIN%%WHERE%%GROUP%%HAVING%%UNION%%ORDER%%LIMIT%%LOCK%%COMMENT%';
   static String insertSql =

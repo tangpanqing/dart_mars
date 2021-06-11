@@ -8,7 +8,7 @@ import 'package:yaml/yaml.dart';
 
 class App {
   static List<String> serveList = ['dev', 'test', 'prod'];
-  static String serveDefault = 'dev';
+  static String serveDefault = 'prod';
   static int portDefault = 80;
   static int portHttpsDefault = 443;
   static String envPath = '/env/';

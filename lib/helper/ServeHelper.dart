@@ -15,11 +15,15 @@ class RouteStruct {
 
 class ServeHelper {
   static void run(List<String> arguments) {
-    _analyseFile();
-    //_runServe(arguments);
+    bool ispass = _analyseFile();
+    if (ispass) {
+      _runServe(arguments);
+    } else {
+      print('serve has been stop, some mistake has been print above');
+    }
   }
 
-  static void _analyseFile() {
+  static bool _analyseFile() {
     List<String> fileList = [];
     String appPath = PackageHelper.getRootPath() + '/lib/app';
 
@@ -32,7 +36,9 @@ class ServeHelper {
       _handleRouteStructList(fileName, fileContent, routeStructList);
     });
 
-    _replaceRouteConfig(routeStructList);
+    bool ispass = _checkRouteStruct(routeStructList);
+    if (ispass) _replaceRouteConfig(routeStructList);
+    return ispass;
   }
 
   static void _allFile(List<String> fileList, String path) {
@@ -71,6 +77,30 @@ class ServeHelper {
     }
   }
 
+  static bool _checkRouteStruct(List<RouteStruct> routeStructList) {
+    bool isPass = true;
+    Map<String, List<String>> map = Map<String, List<String>>();
+
+    routeStructList.forEach((element) {
+      if (!map.containsKey(element.path)) map[element.path] = [];
+      map[element.path].add(element.fileName);
+    });
+
+    map.forEach((key, value) {
+      if (value.length > 1) {
+        isPass = false;
+        print('duplicate request path ' +
+            key +
+            ' was found, please check it from these files:');
+        value.forEach((element) {
+          print(element);
+        });
+      }
+    });
+
+    return isPass;
+  }
+
   static void _replaceRouteConfig(List<RouteStruct> routeStructList) {
     var routePath = PackageHelper.getRootPath() + '/lib/config/route.dart';
     File file = File(routePath);
@@ -98,8 +128,8 @@ class ServeHelper {
 
     fileNameList.forEach((element) {
       element = element.replaceAll(PackageHelper.getRootPath() + '/lib/', '');
-      file.writeAsStringSync(
-          'import \'../' + element + '\' as ' + _fileTag(element) + ';\n',
+
+      file.writeAsStringSync(_importLine(element) + '\n',
           mode: FileMode.append);
     });
 
@@ -113,6 +143,8 @@ class ServeHelper {
     });
 
     file.writeAsStringSync('}', mode: FileMode.append);
+
+    print('file ./lib/config/route.dart has been updated');
   }
 
   static String _fileTag(String element) {
@@ -122,14 +154,29 @@ class ServeHelper {
     return element;
   }
 
+  static String _importLine(String element) {
+    var sb = StringBuffer();
+    sb
+      ..write('import')
+      ..write(' \'../')
+      ..write(element)
+      ..write('\'')
+      ..write(' as ')
+      ..write(_fileTag(element))
+      ..write(';');
+    return sb.toString();
+  }
+
   static String _routeLine(RouteStruct element) {
     String tag = _fileTag(element.fileName);
     String file = tag.split('_').last;
 
     var sb = StringBuffer();
     sb
-      ..write('RouteHelper(')
+      ..write('RouteHelper.add(')
       ..write('\'')
+      ..write(element.method)
+      ..write('\', \'')
       ..write(element.path)
       ..write('\', ')
       ..write(tag)

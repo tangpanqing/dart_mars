@@ -1,12 +1,17 @@
 class HomeController {
   static String content = '''
-import '../../bootstrap/Context.dart';
-import '../../bootstrap/meta/RouteMeta.dart';
+import 'package:{package}/bootstrap/Context.dart';
+import 'package:{package}/bootstrap/meta/RouteMeta.dart';
 
 class HomeController {
-  @RouteMeta('/home', 'get')
-  static void query(Context ctx) async {
+  @RouteMeta('/', 'GET')
+  static void index(Context ctx) async {
     ctx.html("hello world");
+  }
+
+  @RouteMeta('/other', 'GET')
+  static void other(Context ctx) async {
+    ctx.html("this is text from home");
   }
 }
   ''';
