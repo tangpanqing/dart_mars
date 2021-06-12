@@ -1,8 +1,8 @@
 class Db {
   static String content = '''
 import 'Column.dart';
-import 'Builder.dart';
-import 'DbHelper.dart';
+import 'SqlBuilder.dart';
+import 'DbConnection.dart';
 import 'package:mysql1/mysql1.dart';
 
 class Db {
@@ -111,14 +111,14 @@ class Db {
     this.condition["data"] = data;
 
     List values = [];
-    String sql = Builder.insert(this.condition, values);
+    String sql = SqlBuilder.insert(this.condition, values);
 
     if(printSql){
       print(sql);
       print(values);
     }
 
-    int id = await DbHelper.insert(sql, values);
+    int id = await DbConnection.insert(sql, values);
 
     return id;
   }
@@ -141,14 +141,14 @@ class Db {
 
   Future<List<Map<String, dynamic>>> select({bool printSql = false}) async {
     List values = [];
-    String sql = Builder.select(this.condition, values);
+    String sql = SqlBuilder.select(this.condition, values);
 
     if(printSql){
       print(sql);
       print(values);
     }
 
-    List<Map<String, dynamic>> list = await DbHelper.select(sql, values);
+    List<Map<String, dynamic>> list = await DbConnection.select(sql, values);
 
     return list;
   }
@@ -167,46 +167,46 @@ class Db {
     this.condition["set"] = data;
 
     List<Object> values = [];
-    String sql = Builder.update(this.condition, values);
+    String sql = SqlBuilder.update(this.condition, values);
 
     if(printSql){
       print(sql);
       print(values);
     }
 
-    int count = await DbHelper.update(sql, values);
+    int count = await DbConnection.update(sql, values);
     
     return count;
   }
 
   Future<int> delete({bool printSql = false}) async {
     List<Object> values = [];
-    String sql = Builder.delete(this.condition, values);
+    String sql = SqlBuilder.delete(this.condition, values);
 
     if(printSql){
       print(sql);
       print(values);
     }
 
-    int count = await DbHelper.update(sql, values);
+    int count = await DbConnection.update(sql, values);
 
     return count;
   }
 
   static void startTrans() async {
-    await DbHelper.startTrans();
+    await DbConnection.startTrans();
   }
 
   static void commit() async {
-    await DbHelper.commit();
+    await DbConnection.commit();
   }
 
   static void rollback() async {
-    await DbHelper.rollback();
+    await DbConnection.rollback();
   }
 
   static Future<Results> query(String sql, [List<Object> values]) async {
-    return await DbHelper.doQuery(sql, values);
+    return await DbConnection.doQuery(sql, values);
   }
 }
   ''';
