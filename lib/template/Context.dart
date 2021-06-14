@@ -21,6 +21,7 @@ class Context {
   Map<String, dynamic> body = Map<String, dynamic>();
   Map<String, dynamic> session = Map<String, dynamic>();
   Map<String, dynamic> cookie = Map<String, dynamic>();
+  Map<String, dynamic> customize = Map<String, dynamic>();
 
   Context({this.serve, this.env});
 
@@ -56,12 +57,12 @@ class Context {
 
   int getPositiveInt(String key, {int def = 0, int from = 0}) {
     int i = getInt(key, def:def, from:from);
-    return i > 0 ? i : 0;
+    return i > 0 ? i : def;
   }
 
   int getNegativeInt(String key, {int def = 0, int from = 0}) {
     int i = getInt(key, def:def, from:from);
-    return i < 0 ? i : 0;
+    return i < 0 ? i : def;
   }
 
   double getDouble(String key, {double def = 0, int from = 0}) {
@@ -78,12 +79,12 @@ class Context {
 
   double getPositiveDouble(String key, {double def = 0, int from = 0}) {
     double i = getDouble(key, def:def, from:from);
-    return i > 0 ? i : 0;
+    return i > 0 ? i : def;
   }
 
   double getNegativeDouble(String key, {double def = 0, int from = 0}) {
     double i = getDouble(key, def:def, from:from);
-    return i < 0 ? i : 0;
+    return i < 0 ? i : def;
   }
 
   void html(String raw) {
@@ -181,6 +182,7 @@ class Context {
     if (from == 0 || from == 3) allParams.addAll(this.body);
     if (from == 0 || from == 4) allParams.addAll(this.session);
     if (from == 0 || from == 5) allParams.addAll(this.cookie);
+    if (from == 0 || from == 6) allParams.addAll(this.customize);
     return allParams;
   }
 }
