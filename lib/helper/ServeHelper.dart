@@ -136,7 +136,7 @@ class ServeHelper {
     });
 
     file.writeAsStringSync('\n', mode: FileMode.append);
-    file.writeAsStringSync('void loadRoute(){\n', mode: FileMode.append);
+    file.writeAsStringSync('void configRoute(){\n', mode: FileMode.append);
 
     routeStructList.forEach((element) {
       file.writeAsStringSync('  ', mode: FileMode.append);

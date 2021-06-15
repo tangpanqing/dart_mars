@@ -1,9 +1,9 @@
-class Raw {
+class DbRaw {
   static String content = '''
-class Raw {
+class DbRaw {
   String raw;
 
-  Raw(this.raw);
+  DbRaw(this.raw);
 }
   ''';
 }

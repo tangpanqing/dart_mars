@@ -1,4 +1,4 @@
-class Hook {
+class ConfigHook {
   static String content = '''
 import '../bootstrap/Context.dart';
 

@@ -6,13 +6,14 @@ import 'Context.dart';
 import 'helper/RouteHelper.dart';
 import 'helper/LogHelper.dart';
 import 'helper/CommonHelper.dart';
+import '../config/context.dart';
 import '../config/route.dart';
 import '../config/database.dart';
 
 class Server {
   static void http(int port, String serve, Map<String, dynamic> env) {
-    loadRoute();
-    loadDatabase(serve, env);
+    configRoute();
+    configDatabase(serve, env);
 
     HttpServer.bind('0.0.0.0', port).then((httpServer) async {
       httpServer.autoCompress = true;
@@ -21,12 +22,15 @@ class Server {
   }
 
   static void https(int port, String serve, Map<String, dynamic> env) {
-    loadRoute();
-    loadDatabase(serve, env);
+    configRoute();
+    configDatabase(serve, env);
 
     SecurityContext securityContext = SecurityContext();
-    securityContext.useCertificateChain(CommonHelper.rootPath() + '/' + env['sslCertName'].toString());
-    securityContext.usePrivateKey(CommonHelper.rootPath() + '/' + env['sslKeyName'].toString(), password: env['sslPassword'].toString());
+    securityContext.useCertificateChain(
+        CommonHelper.rootPath() + '/' + env['sslCertName'].toString());
+    securityContext.usePrivateKey(
+        CommonHelper.rootPath() + '/' + env['sslKeyName'].toString(),
+        password: env['sslPassword'].toString());
 
     HttpServer.bindSecure('0.0.0.0', port, securityContext)
         .then((httpServer) async {
@@ -39,7 +43,9 @@ class Server {
       Map<String, dynamic> env) async {
     LogHelper.i('----Http Server has start, port=' + port.toString());
     LogHelper.i('----Env type is ' + serve);
-    LogHelper.i('----Open browser and vist http://127.0.0.1:' + port.toString() + ' , you can see some info');
+    LogHelper.i('----Open browser and vist http://127.0.0.1:' +
+        port.toString() +
+        ' , you can see some info');
     await for (HttpRequest request in httpServer) {
       LogHelper.i('---------------------');
       LogHelper.i('----Http Request start----');
@@ -59,6 +65,7 @@ class Server {
         await _handleFile(request, file);
       } else {
         Context ctx = Context(serve: serve, env: env);
+        configContext(ctx);
         await ctx.handle(request);
         await RouteHelper.handle(ctx);
         LogHelper.i(

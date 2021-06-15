@@ -1,7 +1,7 @@
 class Db {
   static String content = '''
-import 'Column.dart';
-import 'SqlBuilder.dart';
+import 'DbColumn.dart';
+import 'DbSqlBuilder.dart';
 import 'DbConnection.dart';
 import 'package:mysql1/mysql1.dart';
 
@@ -17,7 +17,7 @@ class Db {
     return this;
   }
 
-  Db where(List<Column> where) {
+  Db where(List<DbColumn> where) {
     this.condition["where"] = where;
     return this;
   }
@@ -67,7 +67,7 @@ class Db {
     return this;
   }
 
-  Db having(List<Column> having) {
+  Db having(List<DbColumn> having) {
     this.condition["having"] = having;
     return this;
   }
@@ -111,7 +111,7 @@ class Db {
     this.condition["data"] = data;
 
     List values = [];
-    String sql = SqlBuilder.insert(this.condition, values);
+    String sql = DbSqlBuilder.insert(this.condition, values);
 
     if(printSql){
       print(sql);
@@ -141,7 +141,7 @@ class Db {
 
   Future<List<Map<String, dynamic>>> select({bool printSql = false}) async {
     List values = [];
-    String sql = SqlBuilder.select(this.condition, values);
+    String sql = DbSqlBuilder.select(this.condition, values);
 
     if(printSql){
       print(sql);
@@ -167,7 +167,7 @@ class Db {
     this.condition["set"] = data;
 
     List<Object> values = [];
-    String sql = SqlBuilder.update(this.condition, values);
+    String sql = DbSqlBuilder.update(this.condition, values);
 
     if(printSql){
       print(sql);
@@ -181,7 +181,7 @@ class Db {
 
   Future<int> delete({bool printSql = false}) async {
     List<Object> values = [];
-    String sql = SqlBuilder.delete(this.condition, values);
+    String sql = DbSqlBuilder.delete(this.condition, values);
 
     if(printSql){
       print(sql);

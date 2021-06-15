@@ -1,9 +1,9 @@
-class SqlBuilder {
+class DbSqlBuilder {
   static String content = '''
-import 'Column.dart';
-import 'Raw.dart';
+import 'DbColumn.dart';
+import 'DbRaw.dart';
 
-class SqlBuilder {
+class DbSqlBuilder {
   static String selectSql =
       'SELECT%DISTINCT%%EXTRA% %FIELD% FROM %TABLE%%ALIAS%%FORCE%%JOIN%%WHERE%%GROUP%%HAVING%%UNION%%ORDER%%LIMIT%%LOCK%%COMMENT%';
   static String insertSql =
@@ -114,8 +114,8 @@ class SqlBuilder {
     Map map = options["set"];
 
     map.forEach((key, value) {
-      if (value.runtimeType == Raw) {
-        list.add(key + "=" + (value as Raw).raw);
+      if (value.runtimeType == DbRaw) {
+        list.add(key + "=" + (value as DbRaw).raw);
       } else {
         list.add(key + "=?");
         values.add(value);
@@ -173,7 +173,7 @@ class SqlBuilder {
   static String _parseWhere(Map<String, dynamic> options, List values) {
     if (!options.containsKey("where")) return "";
 
-    List<Column> list = options["where"];
+    List<DbColumn> list = options["where"];
     if (list.length == 0) return "";
 
     List<String> l = list.map((e) => _parseWhereItem(e, values)).toList();
@@ -181,13 +181,13 @@ class SqlBuilder {
     return " WHERE " + l.join(" AND ");
   }
 
-  static String _parseWhereItem(Column item, List values) {
-    if (item.fieldVal.runtimeType == Raw) {
+  static String _parseWhereItem(DbColumn item, List values) {
+    if (item.fieldVal.runtimeType == DbRaw) {
       return item.fieldName +
           " " +
           item.optName.toUpperCase() +
           " " +
-          (item.fieldVal as Raw).raw;
+          (item.fieldVal as DbRaw).raw;
     }
 
     if ("=" == item.optName.toUpperCase() ||
@@ -252,7 +252,7 @@ class SqlBuilder {
   static String _parseHaving(Map<String, dynamic> options, List values) {
     if (!options.containsKey("having")) return "";
 
-    List<Column> list = options["having"];
+    List<DbColumn> list = options["having"];
     List<String> l = list.map((e) => _parseWhereItem(e, values)).toList();
 
     return " HAVING " + l.join(" AND ");
