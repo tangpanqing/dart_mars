@@ -43,7 +43,12 @@ class RouteHelper {
   }
 
   static bool _matchPath(String routePath, String requestPath) {
-    return routePath == requestPath;
+    if (!routePath.contains(':')) {
+      return routePath == requestPath;
+    } else {
+      RegExp exp = new RegExp(routePath);
+      return null != exp.firstMatch(requestPath);
+    }
   }
 
   static handle(Context ctx) async {
@@ -53,6 +58,7 @@ class RouteHelper {
       if (_matchMethod(item.routeMethod, ctx.request.method) &&
           _matchPath(item.routePath, ctx.request.uri.path)) {
         notMatch = false;
+        print('RouteItemCall = ' + item.call.toString());
 
         if (!ctx.responseIsClose()) await hookBeforeCall(ctx);
 
