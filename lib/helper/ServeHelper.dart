@@ -114,28 +114,31 @@ class ServeHelper {
     });
 
     file.writeAsStringSync('');
-    file.writeAsStringSync('/// \n', mode: FileMode.append);
-    file.writeAsStringSync(
-        '/// don\'t modify this file yourself, this file will be replace by program\n',
-        mode: FileMode.append);
-    file.writeAsStringSync(
-        '/// for more infomation, see dart pub global run dart_mars --serve \n',
-        mode: FileMode.append);
-    file.writeAsStringSync(
-        '/// last replace time ' + DateTime.now().toString() + ' \n',
-        mode: FileMode.append);
-    file.writeAsStringSync('/// \n', mode: FileMode.append);
+
     file.writeAsStringSync('import \'../bootstrap/helper/RouteHelper.dart\';\n',
         mode: FileMode.append);
 
     fileNameList.forEach((element) {
       element = element.replaceAll(PackageHelper.getRootPath() + '/lib/', '');
-
       file.writeAsStringSync(_importLine(element) + '\n',
           mode: FileMode.append);
     });
 
     file.writeAsStringSync('\n', mode: FileMode.append);
+
+    file.writeAsStringSync('/// \n', mode: FileMode.append);
+    file.writeAsStringSync(
+        '/// don\'t modify this file yourself, this file content will be replace by DartMars\n',
+        mode: FileMode.append);
+    file.writeAsStringSync('/// \n', mode: FileMode.append);
+    file.writeAsStringSync('/// for more infomation, see doc about Route \n',
+        mode: FileMode.append);
+    file.writeAsStringSync('/// \n', mode: FileMode.append);
+    file.writeAsStringSync(
+        '/// last replace time ' + DateTime.now().toString() + ' \n',
+        mode: FileMode.append);
+    file.writeAsStringSync('/// \n', mode: FileMode.append);
+
     file.writeAsStringSync('void configRoute(){\n', mode: FileMode.append);
 
     routeStructList.forEach((element) {
