@@ -42,29 +42,50 @@ class RouteHelper {
     return routeMethod.split('|').contains(requestMethod) || "*" == routeMethod;
   }
 
-  static bool _matchPath(String routePath, String requestPath) {
+  static bool _matchPath(
+      String routePath, String requestPath, List<String> matchParams) {
     if (!routePath.contains(':')) {
       return routePath == requestPath;
     } else {
-      RegExp exp = new RegExp(routePath);
-      return null != exp.firstMatch(requestPath);
+      return matchParams.length != 0;
     }
+  }
+
+  static List<String> _getMatchParams(String routePath, String requestPath) {
+    List<String> list = [];
+    if (!routePath.contains(':')) return list;
+
+    routePath = routePath.replaceAll(RegExp(':\\\\w+'), '(\\\\w+)');
+    print('routePath=' + routePath);
+
+    RegExpMatch regExpMatch = RegExp(routePath).firstMatch(requestPath);
+
+    if (null != regExpMatch) {
+      for (int i = 1; i <= regExpMatch.groupCount; i++) {
+        list.add(regExpMatch.group(i));
+      }
+    }
+
+    return list;
   }
 
   static handle(Context ctx) async {
     bool notMatch = true;
 
     for (RouteItem item in RouteHelper.list) {
+      List<String> matchParams =
+          _getMatchParams(item.routePath, ctx.request.uri.path);
+
       if (_matchMethod(item.routeMethod, ctx.request.method) &&
-          _matchPath(item.routePath, ctx.request.uri.path)) {
+          _matchPath(item.routePath, ctx.request.uri.path, matchParams)) {
         notMatch = false;
-        print('RouteItemCall = ' + item.call.toString());
 
         if (!ctx.responseIsClose()) await hookBeforeCall(ctx);
 
         if (!ctx.responseIsClose()) {
           List<dynamic> args = [];
           args.add(ctx);
+          args.addAll(matchParams);
           await Function.apply(item.call, args);
         }
 
