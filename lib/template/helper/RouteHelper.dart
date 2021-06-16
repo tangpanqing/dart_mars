@@ -56,7 +56,6 @@ class RouteHelper {
     if (!routePath.contains(':')) return list;
 
     routePath = routePath.replaceAll(RegExp(':\\\\w+'), '(\\\\w+)');
-    print('routePath=' + routePath);
 
     RegExpMatch regExpMatch = RegExp(routePath).firstMatch(requestPath);
 
