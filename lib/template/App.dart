@@ -7,6 +7,7 @@ import 'helper/LogHelper.dart';
 import 'package:yaml/yaml.dart';
 
 class App {
+  static String _className = 'App';
   static List<String> serveList = ['dev', 'test', 'prod'];
   static String serveDefault = 'prod';
   static int portDefault = 80;
@@ -21,6 +22,8 @@ class App {
   ];
 
   static void startHttp(List<String> arguments) {
+    LogHelper.init();
+
     try {
       Map<String, String> argMap = _argMap(arguments);
       int port = _getPort(argMap);
@@ -29,11 +32,14 @@ class App {
 
       Server.http(port, serve, env);
     } catch (e) {
-      LogHelper.i('Mars: Error is found when server start , ' + e.toString());
+      LogHelper.info(
+          _className, 'Error is found when server start , ' + e.toString());
     }
   }
 
   static void startHttps(List<String> arguments) {
+    LogHelper.init();
+
     try {
       Map<String, String> argMap = _argMap(arguments);
       int port = _getPortHttps(argMap);
@@ -42,7 +48,8 @@ class App {
 
       Server.https(port, serve, env);
     } catch (e) {
-      LogHelper.i('Mars: Error is found when server start , ' + e.toString());
+      LogHelper.info(
+          _className, 'Error is found when server start , ' + e.toString());
     }
   }
 
@@ -52,9 +59,10 @@ class App {
     String serve = argMap["serve"].toString();
 
     if (serve.isEmpty) return serveDefault;
-    
-    if (!serveList.contains(serve)) throw 'param serve only accept value form [' + serveList.join(',') + ']';
-    
+
+    if (!serveList.contains(serve))
+      throw 'param serve only accept value form [' + serveList.join(',') + ']';
+
     return serve;
   }
 

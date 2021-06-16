@@ -1,5 +1,6 @@
 class Server {
   static String content = '''
+import 'dart:convert';
 import 'dart:io';
 
 import 'Context.dart';
@@ -11,6 +12,8 @@ import '../config/route.dart';
 import '../config/database.dart';
 
 class Server {
+  static String _className = 'Server';
+
   static void http(int port, String serve, Map<String, dynamic> env) {
     configRoute();
     configDatabase(serve, env);
@@ -41,17 +44,18 @@ class Server {
 
   static Future<void> _http(HttpServer httpServer, int port, String serve,
       Map<String, dynamic> env) async {
-    LogHelper.i('----Http Server has start, port=' + port.toString());
-    LogHelper.i('----Env type is ' + serve);
-    LogHelper.i('----Open browser and vist http://127.0.0.1:' +
-        port.toString() +
-        ' , you can see some info');
+    LogHelper.info(
+        _className, 'Http Server has start, port=' + port.toString());
+    LogHelper.info(_className, 'Env type is ' + serve);
+    LogHelper.info(
+        _className,
+        'Open browser and vist http://127.0.0.1:' +
+            port.toString() +
+            ' , you can see some info');
     await for (HttpRequest request in httpServer) {
-      LogHelper.i('---------------------');
-      LogHelper.i('----Http Request start----');
-      LogHelper.i('class Server request.uri.path = ' + request.uri.path);
-      LogHelper.i('class Server request.uri.queryParameters = ' +
-          request.uri.queryParameters.toString());
+      LogHelper.info(_className, '------------------');
+      LogHelper.info(_className, 'Http Request start');
+      LogHelper.info(_className, 'request.uri.path = ' + request.uri.path);
 
       bool isFile = request.uri.path.contains('.');
       bool isExists = false;
@@ -67,12 +71,16 @@ class Server {
         Context ctx = Context(serve: serve, env: env);
         configContext(ctx);
         await ctx.handle(request);
+
+        LogHelper.info(_className, 'ctx.query = ' + jsonEncode(ctx.query));
+        LogHelper.info(_className, 'ctx.body = ' + jsonEncode(ctx.body));
+
         await RouteHelper.handle(ctx);
-        LogHelper.i(
-            'class Server ctx.responseContent = ' + ctx.responseContent);
+        LogHelper.info(
+            _className, 'ctx.responseContent = ' + ctx.responseContent);
       }
 
-      LogHelper.i('----Http Request end----');
+      LogHelper.info(_className, 'Http Request end');
     }
   }
 
