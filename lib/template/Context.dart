@@ -3,13 +3,15 @@ class Context {
 import 'dart:io';
 import 'dart:convert';
 
+import 'dart:typed_data';
+
 class Context {
   String serve;
 
   Map<String, dynamic> env;
 
   HttpRequest request;
-  
+
   HttpResponse response;
   String responseContent;
   bool _responseIsClose = false;
@@ -56,12 +58,12 @@ class Context {
   }
 
   int getPositiveInt(String key, {int def = 0, int from = 0}) {
-    int i = getInt(key, def:def, from:from);
+    int i = getInt(key, def: def, from: from);
     return i > 0 ? i : def;
   }
 
   int getNegativeInt(String key, {int def = 0, int from = 0}) {
-    int i = getInt(key, def:def, from:from);
+    int i = getInt(key, def: def, from: from);
     return i < 0 ? i : def;
   }
 
@@ -78,12 +80,12 @@ class Context {
   }
 
   double getPositiveDouble(String key, {double def = 0, int from = 0}) {
-    double i = getDouble(key, def:def, from:from);
+    double i = getDouble(key, def: def, from: from);
     return i > 0 ? i : def;
   }
 
   double getNegativeDouble(String key, {double def = 0, int from = 0}) {
-    double i = getDouble(key, def:def, from:from);
+    double i = getDouble(key, def: def, from: from);
     return i < 0 ? i : def;
   }
 
@@ -149,16 +151,24 @@ class Context {
   Future<Map<String, dynamic>> _getBody(HttpRequest request) async {
     Map<String, dynamic> map = Map<String, dynamic>();
 
-    if ("GET" != request.method) {
-      var bodyStr = await utf8.decoder.bind(request).join();
+    String contentType =
+        request.headers.contentType.toString().split(';').first.toLowerCase();
 
-      if ("application/x-www-form-urlencoded" ==
-          request.headers.contentType.toString()) {
+    if ("GET" != request.method) {
+      if ("application/x-www-form-urlencoded" == contentType) {
+        var bodyStr = await utf8.decoder.bind(request).join();
         map = Uri.parse("?" + bodyStr).queryParameters;
-      } else if ("application/json" == request.headers.contentType.toString()) {
+      } else if ("application/json" == contentType) {
+        var bodyStr = await utf8.decoder.bind(request).join();
         map = Map<String, dynamic>.from(jsonDecode(bodyStr));
+      } else if ("multipart/form-data" == contentType) {
+        print("request.contentLength=" + request.contentLength.toString());
+
+        //Uint8List element = await request.last;
+        //File file = new File('2.jpg');
+        //file.writeAsBytes(element);
       } else {
-        print("contentType=" + request.headers.contentType.toString());
+        print("contentType=" + contentType);
       }
     }
 
