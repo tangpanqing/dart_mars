@@ -13,12 +13,14 @@ class LogHelper {
   static String logForm;
 
   static void init() {
+    String scriptName = CommonHelper.scriptName();
+
     Logger.root.level = Level.ALL;
     Logger.root.onRecord.listen((LogRecord rec) {
-      List<String> l = logForm.split(',').map((e) => _c(e, rec)).toList();
+      List<String> l = logForm.split(',').map((e) => _text(e, rec)).toList();
 
       String content = l.join(logSeparator);
-      print(content);
+      if (scriptName.contains('.dart')) print(content);
 
       if (rec.level.value >= Level.WARNING.value && isErrLog)
         _log(content, errLogName);
@@ -27,7 +29,7 @@ class LogHelper {
     });
   }
 
-  static String _c(String name, LogRecord rec) {
+  static String _text(String name, LogRecord rec) {
     if (name == 'levelName') return rec.level.name;
     if (name == 'time') return rec.time.toString();
     if (name == 'sequenceNumber') return rec.sequenceNumber.toString();
@@ -48,11 +50,11 @@ class LogHelper {
     String date =
         DateTime.now().toString().substring(0, 9 + 1).replaceAll('-', '');
 
-    fileName.replaceAll('{date}', date);
+    fileName = fileName.replaceAll('{date}', date);
 
     File file = File(CommonHelper.rootPath() + '/log/' + fileName);
     if (!file.existsSync()) file.createSync();
-    file.writeAsStringSync(text + '\\r\\n', mode: FileMode.append);
+    file.writeAsStringSync(text + '\\n', mode: FileMode.append);
   }
 }
   ''';

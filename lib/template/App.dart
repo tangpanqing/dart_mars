@@ -33,9 +33,9 @@ class App {
       Map<String, dynamic> env = _getEnv(CommonHelper.rootPath(), serve);
 
       Server.http(port, serve, env);
-    } catch (e) {
-      LogHelper.info(
-          _className, 'Error is found when server start , ' + e.toString());
+    } catch (e, s) {
+      LogHelper.warning(
+          _className, 'Error is found when server start , ' + e.toString(), e, s);
     }
   }
 
@@ -50,9 +50,9 @@ class App {
       Map<String, dynamic> env = _getEnv(CommonHelper.rootPath(), serve);
 
       Server.https(port, serve, env);
-    } catch (e) {
-      LogHelper.info(
-          _className, 'Error is found when server start , ' + e.toString());
+    } catch (e, s) {
+      LogHelper.warning(
+          _className, 'Error is found when server start , ' + e.toString(), e, s);
     }
   }
 
