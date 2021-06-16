@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import '../template/config/ConfigHook.dart';
-import '../template/config/ConfigDatabase.dart';
 import '../template/config/ConfigContext.dart';
+import '../template/config/ConfigDatabase.dart';
+import '../template/config/ConfigHook.dart';
+import '../template/config/ConfigLog.dart';
 import '../template/config/ConfigRoute.dart';
 
 import '../template/controller/HomeController.dart';
@@ -84,10 +85,11 @@ class CreateHelper {
     'lib/bootstrap/meta/RouteMeta.dart': RouteMeta.content,
 
     /// config
-    'lib/config/route.dart': ConfigRoute.content,
-    'lib/config/hook.dart': ConfigHook.content,
-    'lib/config/database.dart': ConfigDatabase.content,
     'lib/config/context.dart': ConfigContext.content,
+    'lib/config/database.dart': ConfigDatabase.content,
+    'lib/config/hook.dart': ConfigHook.content,
+    'lib/config/log.dart': ConfigLog.content,
+    'lib/config/route.dart': ConfigRoute.content,
 
     /// controller
     'lib/app/controller/HomeController.dart': HomeController.content,

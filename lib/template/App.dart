@@ -5,6 +5,7 @@ import 'Server.dart';
 import 'helper/CommonHelper.dart';
 import 'helper/LogHelper.dart';
 import 'package:yaml/yaml.dart';
+import '../config/log.dart';
 
 class App {
   static String _className = 'App';
@@ -22,6 +23,7 @@ class App {
   ];
 
   static void startHttp(List<String> arguments) {
+    configLog();
     LogHelper.init();
 
     try {
@@ -38,6 +40,7 @@ class App {
   }
 
   static void startHttps(List<String> arguments) {
+    configLog();
     LogHelper.init();
 
     try {
