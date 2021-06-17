@@ -6,5 +6,6 @@ environment:
 dependencies:
   yaml: ^3.1.0
   mysql1: ^0.19.2
+  mime: ^1.0.0
   ''';
 }

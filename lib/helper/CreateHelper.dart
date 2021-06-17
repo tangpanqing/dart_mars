@@ -19,10 +19,14 @@ import '../template/helper/LogHelper.dart';
 import '../template/helper/CommonHelper.dart';
 import '../template/helper/ConvertHelper.dart';
 import '../template/helper/PrintHelper.dart';
+import '../template/helper/RequestHelper.dart';
 import '../template/helper/RouteHelper.dart';
 import '../template/helper/VerifyHelper.dart';
 
 import '../template/meta/RouteMeta.dart';
+
+import '../template/model/FormData.dart';
+import '../template/model/UploadFile.dart';
 
 import '../template/App.dart';
 import '../template/Bin.dart';
@@ -47,6 +51,7 @@ class CreateHelper {
 
     /// public
     'public/hello.html': '<h1>hello world</h1>',
+    'public/uploads/.gitkeep': '',
 
     /// env
     'env/dev.yaml': Env.content,
@@ -74,15 +79,20 @@ class CreateHelper {
     'lib/bootstrap/db/DbSqlBuilder.dart': DbSqlBuilder.content,
 
     /// bootstrap helper
+    'lib/bootstrap/helper/CommonHelper.dart': CommonHelper.content,
     'lib/bootstrap/helper/ConvertHelper.dart': ConvertHelper.content,
-    'lib/bootstrap/helper/PrintHelper.dart': PrintHelper.content,
     'lib/bootstrap/helper/LogHelper.dart': LogHelper.content,
+    'lib/bootstrap/helper/PrintHelper.dart': PrintHelper.content,
+    'lib/bootstrap/helper/RequestHelper.dart': RequestHelper.content,
     'lib/bootstrap/helper/RouteHelper.dart': RouteHelper.content,
     'lib/bootstrap/helper/VerifyHelper.dart': VerifyHelper.content,
-    'lib/bootstrap/helper/CommonHelper.dart': CommonHelper.content,
 
     /// bootstrap meta
     'lib/bootstrap/meta/RouteMeta.dart': RouteMeta.content,
+
+    /// bootstrap model
+    'lib/bootstrap/model/FormData.dart': FormData.content,
+    'lib/bootstrap/model/UploadFile.dart': UploadFile.content,
 
     /// config
     'lib/config/context.dart': ConfigContext.content,

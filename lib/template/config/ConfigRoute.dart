@@ -12,7 +12,8 @@ import '../app/controller/HomeController.dart' as app_controller_HomeController;
 ///
 void configRoute() {
   RouteHelper.add('GET', '/', app_controller_HomeController.HomeController.index);
-  RouteHelper.add('GET', '/other', app_controller_HomeController.HomeController.other);
+  RouteHelper.add('GET', '/user', app_controller_HomeController.HomeController.user);
+  RouteHelper.add('GET', '/city/:cityName', app_controller_HomeController.HomeController.city);
 }
   ''';
 }

@@ -1,23 +1,21 @@
 class Context {
   static String content = '''
+import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
-
-import 'dart:typed_data';
+import 'model/UploadFile.dart';
+import 'helper/RequestHelper.dart';
 
 class Context {
   String serve;
-
   Map<String, dynamic> env;
 
   HttpRequest request;
-
   HttpResponse response;
+  ContentType responseType;
   String responseContent;
   bool _responseIsClose = false;
 
-  String method;
-  ContentType responseType;
   Map<String, dynamic> header = Map<String, dynamic>();
   Map<String, dynamic> query = Map<String, dynamic>();
   Map<String, dynamic> body = Map<String, dynamic>();
@@ -30,12 +28,25 @@ class Context {
   Future<void> handle(HttpRequest request) async {
     this.request = request;
     this.response = request.response;
-    this.method = request.method;
 
-    this.header = _getHeader(request);
-    this.query = _getQuery(request);
-    this.body = await _getBody(request);
-    this.session = await _getSession(request);
+    this.header = RequestHelper.getHeader(request);
+    this.query = RequestHelper.getQuery(request);
+    this.body = await RequestHelper.getBody(request);
+    this.session = await RequestHelper.getSession(request);
+  }
+
+  UploadFile getUploadFile(String key, {UploadFile def = null, int from = 0}) {
+    Map<String, dynamic> all = _getAllParams(from);
+
+    if (all.containsKey(key)) {
+      try {
+        return all[key] as UploadFile;
+      } catch (e) {
+        return def;
+      }
+    }
+
+    return def;
   }
 
   String getString(String key, {String def = "", int from = 0}) {
@@ -118,8 +129,6 @@ class Context {
 
   bool responseIsClose() => _responseIsClose;
 
-  String getRequestPath() => request.uri.path;
-
   void showJson(num code, String msg, dynamic data) {
     Map<String, dynamic> map = {"code": code, "msg": msg, "data": data};
 
@@ -132,57 +141,6 @@ class Context {
 
   void showError(String msg) {
     showJson(400, msg, {});
-  }
-
-  Map<String, dynamic> _getHeader(HttpRequest request) {
-    Map<String, dynamic> map = Map<String, dynamic>();
-    request.headers.forEach((name, values) {
-      map[name] = values.join(",");
-    });
-
-    return map;
-  }
-
-  Map<String, dynamic> _getQuery(HttpRequest request) {
-    return Map<String, dynamic>.from(
-        jsonDecode(jsonEncode(request.uri.queryParameters)));
-  }
-
-  Future<Map<String, dynamic>> _getBody(HttpRequest request) async {
-    Map<String, dynamic> map = Map<String, dynamic>();
-
-    String contentType =
-        request.headers.contentType.toString().split(';').first.toLowerCase();
-
-    if ("GET" != request.method) {
-      if ("application/x-www-form-urlencoded" == contentType) {
-        var bodyStr = await utf8.decoder.bind(request).join();
-        map = Uri.parse("?" + bodyStr).queryParameters;
-      } else if ("application/json" == contentType) {
-        var bodyStr = await utf8.decoder.bind(request).join();
-        map = Map<String, dynamic>.from(jsonDecode(bodyStr));
-      } else if ("multipart/form-data" == contentType) {
-        print("request.contentLength=" + request.contentLength.toString());
-
-        //Uint8List element = await request.last;
-        //File file = new File('2.jpg');
-        //file.writeAsBytes(element);
-      } else {
-        print("contentType=" + contentType);
-      }
-    }
-
-    return map;
-  }
-
-  Map<String, dynamic> _getSession(HttpRequest request) {
-    Map<String, dynamic> map = Map<String, dynamic>();
-
-    request.session.forEach((key, value) {
-      map[key.toString()] = value.toString();
-    });
-
-    return map;
   }
 
   Map<String, dynamic> _getAllParams(int from) {

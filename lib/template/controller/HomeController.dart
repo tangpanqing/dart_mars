@@ -9,14 +9,16 @@ class HomeController {
     ctx.html("hello world");
   }
 
-  @RouteMeta('/other', 'GET')
-  static void other(Context ctx) async {
-    ctx.html("this is text from home");
+  @RouteMeta('/user', 'GET')
+  static void user(Context ctx) async {
+    String name = ctx.getString('name');
+    // some other code
+    ctx.html("hello " + name);
   }
 
   @RouteMeta('/city/:cityName', 'GET')
   static void city(Context ctx, String cityName) async {
-    ctx.html("this is text from city " + cityName);
+    ctx.html("hello " + cityName);
   }
 }
   ''';
