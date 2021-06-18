@@ -1,5 +1,11 @@
 import 'dart:io';
 
+import '../template/crypto/AES.dart';
+import '../template/crypto/RSA.dart';
+import '../template/crypto/Sha1WithRSA.dart';
+import '../template/crypto/Sha256WithRSA.dart';
+import '../template/crypto/ShaRsaHelper.dart';
+
 import '../template/config/ConfigContext.dart';
 import '../template/config/ConfigDatabase.dart';
 import '../template/config/ConfigHook.dart';
@@ -86,6 +92,13 @@ class CreateHelper {
     'lib/bootstrap/helper/RequestHelper.dart': RequestHelper.content,
     'lib/bootstrap/helper/RouteHelper.dart': RouteHelper.content,
     'lib/bootstrap/helper/VerifyHelper.dart': VerifyHelper.content,
+
+    /// bootstrap crypto
+    'lib/bootstrap/crypto/AES.dart': AES.content,
+    'lib/bootstrap/crypto/RSA.dart': RSA.content,
+    'lib/bootstrap/crypto/Sha1WithRSA.dart': Sha1WithRSA.content,
+    'lib/bootstrap/crypto/Sha256WithRSA.dart': Sha256WithRSA.content,
+    'lib/bootstrap/crypto/ShaRsaHelper.dart': ShaRsaHelper.content,
 
     /// bootstrap meta
     'lib/bootstrap/meta/RouteMeta.dart': RouteMeta.content,
