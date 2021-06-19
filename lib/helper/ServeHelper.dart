@@ -149,7 +149,7 @@ class ServeHelper {
 
     file.writeAsStringSync('}', mode: FileMode.append);
 
-    print('file ./lib/config/route.dart has been updated');
+    print('route config file has been updated, see ./lib/config/route.dart');
   }
 
   static String _fileTag(String element) {

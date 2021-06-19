@@ -43,9 +43,13 @@ class RequestHelper {
       map = Uri.parse("?" + bodyStr).queryParameters;
     } else if ("application/json" == contentType) {
       var bodyStr = await utf8.decoder.bind(request).join();
-      map = Map<String, dynamic>.from(jsonDecode(bodyStr));
+      try {
+        map = Map<String, dynamic>.from(jsonDecode(bodyStr));
+      } catch (e) {}
     } else if ("multipart/form-data" == contentType) {
-      map = await _asFormData(request);
+      try {
+        map = await _asFormData(request);
+      } catch (e) {}
     } else {
       print("contentType=" + contentType);
     }
