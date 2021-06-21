@@ -34,22 +34,29 @@ class RequestHelper {
 
   static Future<Map<String, dynamic>> getBody(HttpRequest request) async {
     Map<String, dynamic> map = Map<String, dynamic>();
+    if (null == request.headers.contentType) return map;
 
+    String primaryType = request.headers.contentType.primaryType;
+    String subType = request.headers.contentType.subType;
     String contentType =
         request.headers.contentType.toString().split(';').first.toLowerCase();
 
-    if ("application/x-www-form-urlencoded" == contentType) {
-      var bodyStr = await utf8.decoder.bind(request).join();
-      map = Uri.parse("?" + bodyStr).queryParameters;
-    } else if ("application/json" == contentType) {
-      var bodyStr = await utf8.decoder.bind(request).join();
-      try {
-        map = Map<String, dynamic>.from(jsonDecode(bodyStr));
-      } catch (e) {}
+    if ("application" == primaryType) {
+      dynamic bytesBuilder =
+          await request.fold(new BytesBuilder(), (bb, bytes) => bb..add(bytes));
+      String bodyStr = utf8.decode(bytesBuilder.takeBytes());
+
+      if ("x-www-form-urlencoded" == subType) {
+        map = Uri.parse("?" + bodyStr).queryParameters;
+      }
+
+      if ("json" == subType) {
+        try {
+          map = Map<String, dynamic>.from(jsonDecode(bodyStr));
+        } catch (e) {}
+      }
     } else if ("multipart/form-data" == contentType) {
-      try {
-        map = await _asFormData(request);
-      } catch (e) {}
+      map = await _asFormData(request);
     } else {
       print("contentType=" + contentType);
     }
