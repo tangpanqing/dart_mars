@@ -42,8 +42,9 @@ class RequestHelper {
         request.headers.contentType.toString().split(';').first.toLowerCase();
 
     if ("application" == primaryType) {
-      dynamic bytesBuilder =
-          await request.fold(new BytesBuilder(), (bb, bytes) => bb..add(bytes));
+      BytesBuilder bytesBuilder = await request.fold(new BytesBuilder(),
+          (BytesBuilder builder, List<int> data) => builder..add(data));
+
       String bodyStr = utf8.decode(bytesBuilder.takeBytes());
 
       if ("x-www-form-urlencoded" == subType) {
