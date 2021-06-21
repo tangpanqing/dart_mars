@@ -6,6 +6,8 @@ import 'helper/CommonHelper.dart';
 import 'helper/LogHelper.dart';
 import 'package:yaml/yaml.dart';
 import '../config/log.dart';
+import '../config/route.dart';
+import '../config/database.dart';
 
 class App {
   static String _className = 'App';
@@ -25,6 +27,7 @@ class App {
   static void startHttp(List<String> arguments) {
     configLog();
     LogHelper.init();
+    configRoute();
 
     try {
       Map<String, String> argMap = _argMap(arguments);
@@ -32,27 +35,17 @@ class App {
       String serve = _getServe(argMap);
       Map<String, dynamic> env = _getEnv(CommonHelper.rootPath(), serve);
 
+      configDatabase(serve, env);
+
       Server.http(port, serve, env);
+
+      if (env.containsKey('ssl') && env['ssl'].toString() == 'on') {
+        int portHttps = _getPortHttps(argMap);
+        Server.https(portHttps, serve, env);
+      }
     } catch (e, s) {
-      LogHelper.warning(
-          _className, 'Error is found when server start , ' + e.toString(), e, s);
-    }
-  }
-
-  static void startHttps(List<String> arguments) {
-    configLog();
-    LogHelper.init();
-
-    try {
-      Map<String, String> argMap = _argMap(arguments);
-      int port = _getPortHttps(argMap);
-      String serve = _getServe(argMap);
-      Map<String, dynamic> env = _getEnv(CommonHelper.rootPath(), serve);
-
-      Server.https(port, serve, env);
-    } catch (e, s) {
-      LogHelper.warning(
-          _className, 'Error is found when server start , ' + e.toString(), e, s);
+      LogHelper.warning(_className,
+          'Error is found when server start , ' + e.toString(), e, s);
     }
   }
 

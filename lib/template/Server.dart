@@ -3,47 +3,38 @@ class Server {
 import 'dart:convert';
 import 'dart:io';
 
-import 'Context.dart';
 import 'helper/RouteHelper.dart';
 import 'helper/LogHelper.dart';
 import 'helper/CommonHelper.dart';
+import 'Context.dart';
 import '../config/context.dart';
-import '../config/route.dart';
-import '../config/database.dart';
 
 class Server {
   static String _className = 'Server';
 
   static void http(int port, String serve, Map<String, dynamic> env) {
-    configRoute();
-    configDatabase(serve, env);
-
     HttpServer.bind('0.0.0.0', port).then((httpServer) async {
-      httpServer.autoCompress = true;
       await _http(httpServer, port, serve, env);
     });
   }
 
   static void https(int port, String serve, Map<String, dynamic> env) {
-    configRoute();
-    configDatabase(serve, env);
-
     SecurityContext securityContext = SecurityContext();
     securityContext.useCertificateChain(
-        CommonHelper.rootPath() + '/' + env['sslCertName'].toString());
+        CommonHelper.rootPath() + '/' + env['sslCertificate'].toString());
     securityContext.usePrivateKey(
-        CommonHelper.rootPath() + '/' + env['sslKeyName'].toString(),
-        password: env['sslPassword'].toString());
+        CommonHelper.rootPath() + '/' + env['sslCertificateKey'].toString());
 
     HttpServer.bindSecure('0.0.0.0', port, securityContext)
         .then((httpServer) async {
-      httpServer.autoCompress = true;
       await _http(httpServer, port, serve, env);
     });
   }
 
   static Future<void> _http(HttpServer httpServer, int port, String serve,
       Map<String, dynamic> env) async {
+    httpServer.autoCompress = true;
+
     LogHelper.info(
         _className, 'Http Server has start, port=' + port.toString());
     LogHelper.info(_className, 'Env type is ' + serve);
