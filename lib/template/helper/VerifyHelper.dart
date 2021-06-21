@@ -1,17 +1,5 @@
 class VerifyHelper {
   static String content = '''
-String sprintf(String r, List<dynamic> l) {
-  return r;
-}
-
-class VerifyItem {
-  dynamic value;
-  String name;
-  List<String> rules;
-
-  VerifyItem(this.value, this.name, this.rules);
-}
-
 class VerifyHelper {
   /// Retrun true if [s] is empty, otherwise false.
   static bool empty(String s) {
@@ -240,38 +228,8 @@ class VerifyHelper {
     bool isMatch = RegExp(r"\d{17}[\d|x|X]|\d{15}").hasMatch(s);
 
     if (isMatch && s.length == 18) {
-      List idCardWi = [
-        7,
-        9,
-        10,
-        5,
-        8,
-        4,
-        2,
-        1,
-        6,
-        3,
-        7,
-        9,
-        10,
-        5,
-        8,
-        4,
-        2
-      ];
-      List<int> idCardY = [
-        1,
-        0,
-        10,
-        9,
-        8,
-        7,
-        6,
-        5,
-        4,
-        3,
-        2
-      ];
+      List idCardWi = [7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2];
+      List<int> idCardY = [1,0,10,9,8,7,6,5,4,3,2];
 
       int idCardWiSum = 0;
       for (var i = 0; i < 17; i++) {
@@ -315,7 +273,7 @@ class VerifyHelper {
 
   /// Retrun true if [s] char is letter,number,-,_, otherwise false.
   static bool alphaNumDash(String s) {
-    return !RegExp(r"[^a-zA-Z0-9\-\_]+").hasMatch(s);
+    return !RegExp(r"[^a-zA-Z0-9\\-\\_]+").hasMatch(s);
   }
 
   /// Retrun true if [s] char is not letter,number,-,_, otherwise false.
@@ -325,7 +283,7 @@ class VerifyHelper {
 
   /// Retrun true if [s] char is chinese text, otherwise false.
   static bool chs(String s) {
-    return !RegExp(r"[^\u4e00-\u9fa5]+").hasMatch(s);
+    return !RegExp(r"[^\\u4e00-\\u9fa5]+").hasMatch(s);
   }
 
   /// Retrun true if [s] char is not chinese text, otherwise false.
@@ -335,7 +293,7 @@ class VerifyHelper {
 
   /// Retrun true if [s] char is chinese text,letter, otherwise false.
   static bool chsAlpha(String s) {
-    return !RegExp(r"[^a-zA-Z\u4e00-\u9fa5]+").hasMatch(s);
+    return !RegExp(r"[^a-zA-Z\\u4e00-\\u9fa5]+").hasMatch(s);
   }
 
   /// Retrun true if [s] char is not chinese text,letter, otherwise false.
@@ -345,7 +303,7 @@ class VerifyHelper {
 
   /// Retrun true if [s] char is chinese text,letter,number, otherwise false.
   static bool chsAlphaNum(String s) {
-    return !RegExp(r"[^a-zA-Z0-9\u4e00-\u9fa5]+").hasMatch(s);
+    return !RegExp(r"[^a-zA-Z0-9\\u4e00-\\u9fa5]+").hasMatch(s);
   }
 
   /// Retrun true if [s] char is not chinese text,letter,number, otherwise false.
@@ -355,7 +313,7 @@ class VerifyHelper {
 
   /// Retrun true if [s] char is chinese text,letter,number,-,_, otherwise false.
   static bool chsAlphaNumDash(String s) {
-    return !RegExp(r"[^a-zA-Z0-9\-\_\u4e00-\u9fa5]+").hasMatch(s);
+    return !RegExp(r"[^a-zA-Z0-9\\-\\_\\u4e00-\\u9fa5]+").hasMatch(s);
   }
 
   /// Retrun true if [s] char is not chinese text,letter,number,-,_, otherwise false.
@@ -363,6 +321,5 @@ class VerifyHelper {
     return !chsAlphaNumDash(s);
   }
 }
-
   ''';
 }
