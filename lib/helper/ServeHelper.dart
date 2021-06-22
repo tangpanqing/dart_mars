@@ -7,7 +7,7 @@ import 'DataBaseHelper.dart';
 
 class ServeHelper {
   static void run(List<String> arguments) {
-    DataBaseHelper.run();
+    DataBaseHelper.analyseFile();
 
     return;
 
