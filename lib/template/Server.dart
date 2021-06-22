@@ -43,37 +43,48 @@ class Server {
         'Open browser and vist http://127.0.0.1:' +
             port.toString() +
             ' , you can see some info');
-    await for (HttpRequest request in httpServer) {
-      LogHelper.info(_className, '------------------');
-      LogHelper.info(_className, 'Http Request start');
-      LogHelper.info(_className, 'request.uri.path = ' + request.uri.path);
 
-      bool isFile = request.uri.path.contains('.');
-      bool isExists = false;
-      File file;
-      if (isFile) {
-        file = File(CommonHelper.rootPath() + '/public' + request.uri.path);
-        isExists = file.existsSync();
-      }
-
-      if (isFile && isExists) {
-        await _handleFile(request, file);
-      } else {
-        Context ctx = Context(serve: serve, env: env);
-        configContext(ctx);
-        await ctx.handle(request);
-
-        LogHelper.info(_className, 'ctx.query = ' + jsonEncode(ctx.query));
-        LogHelper.info(_className, 'ctx.body = ' + jsonEncode(ctx.body));
-
-        await RouteHelper.handle(ctx);
-        LogHelper.info(
-            _className, 'ctx.responseContent = ' + ctx.responseContent);
-      }
-
-      LogHelper.info(_className, 'Http Request end');
-    }
+    httpServer.listen((HttpRequest request) async {
+      await _onData(request, serve, env);
+    }, onError: _onError, onDone: _onDone);
   }
+
+  static Future<void> _onData(
+      HttpRequest request, String serve, Map<String, dynamic> env) async {
+    LogHelper.info(_className, '------------------');
+    LogHelper.info(_className, 'Http Request start');
+    LogHelper.info(_className, 'request.uri.path = ' + request.uri.path);
+
+    bool isFile = request.uri.path.contains('.');
+    bool isExists = false;
+    File file;
+    if (isFile) {
+      file = File(CommonHelper.rootPath() + '/public' + request.uri.path);
+      isExists = file.existsSync();
+    }
+
+    if (isFile && isExists) {
+      await _handleFile(request, file);
+    } else {
+      Context ctx = Context(serve: serve, env: env);
+      configContext(ctx);
+      await ctx.handle(request);
+
+      LogHelper.info(_className, 'ctx.query = ' + jsonEncode(ctx.query));
+      LogHelper.info(_className, 'ctx.body = ' + jsonEncode(ctx.body));
+
+      await RouteHelper.handle(ctx);
+      LogHelper.info(
+          _className, 'ctx.responseContent = ' + ctx.responseContent);
+    }
+
+    LogHelper.info(_className, 'Http Request end');
+  }
+
+  static void _onError(Object e, StackTrace s) =>
+      LogHelper.warning(_className, 'onError', e, s);
+
+  static void _onDone() => LogHelper.info(_className, '_onDone');
 
   static Future<void> _handleFile(HttpRequest request, File file) async {
     try {

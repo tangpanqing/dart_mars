@@ -30,6 +30,8 @@ import '../template/helper/RouteHelper.dart';
 import '../template/helper/VerifyHelper.dart';
 
 import '../template/meta/RouteMeta.dart';
+import '../template/meta/TableMeta.dart';
+import '../template/meta/FieldMeta.dart';
 
 import '../template/model/FormData.dart';
 import '../template/model/UploadFile.dart';
@@ -102,6 +104,8 @@ class CreateHelper {
 
     /// bootstrap meta
     'lib/bootstrap/meta/RouteMeta.dart': RouteMeta.content,
+    'lib/bootstrap/meta/TableMeta.dart': TableMeta.content,
+    'lib/bootstrap/meta/FieldMeta.dart': FieldMeta.content,
 
     /// bootstrap model
     'lib/bootstrap/model/FormData.dart': FormData.content,
