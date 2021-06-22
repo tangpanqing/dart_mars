@@ -2,8 +2,8 @@ import 'dart:core';
 
 import 'package:process_run/shell.dart';
 import 'PackageHelper.dart';
-import 'RouteConfigHelper.dart';
-import 'DataBaseHelper.dart';
+import './serve/RouteConfigHelper.dart';
+import './serve/DataBaseHelper.dart';
 
 class ServeHelper {
   static void run(List<String> arguments) {

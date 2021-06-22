@@ -6,13 +6,13 @@ import '../template/bootstrap/crypto/Sha1WithRSA.dart';
 import '../template/bootstrap/crypto/Sha256WithRSA.dart';
 import '../template/bootstrap/crypto/ShaRsaHelper.dart';
 
-import '../template/config/ConfigContext.dart';
-import '../template/config/ConfigDatabase.dart';
-import '../template/config/ConfigHook.dart';
-import '../template/config/ConfigLog.dart';
-import '../template/config/ConfigRoute.dart';
+import '../template/app/config/ConfigContext.dart';
+import '../template/app/config/ConfigDatabase.dart';
+import '../template/app/config/ConfigHook.dart';
+import '../template/app/config/ConfigLog.dart';
+import '../template/app/config/ConfigRoute.dart';
 
-import '../template/controller/HomeController.dart';
+import '../template/app/controller/HomeController.dart';
 
 import '../template/bootstrap/db/Db.dart';
 import '../template/bootstrap/db/DbConfig.dart';
@@ -40,8 +40,10 @@ import '../template/bootstrap/App.dart';
 import '../template/bootstrap/Context.dart';
 import '../template/bootstrap/Server.dart';
 
-import '../template/Bin.dart';
-import '../template/Env.dart';
+import '../template/bin/Bin.dart';
+import '../template/extend/model/Agent.dart';
+
+import '../template/env/Env.dart';
 import '../template/Pubspec.dart';
 
 class CreateHelper {
@@ -124,6 +126,7 @@ class CreateHelper {
 
     /// extend
     'lib/extend/.gitkeep': '',
+    'lib/extend/model/Agent.dart': Agent.content,
 
     /// tests
     'lib/tests/test_main.dart': '''

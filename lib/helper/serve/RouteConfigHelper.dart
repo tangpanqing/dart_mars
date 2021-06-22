@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'PackageHelper.dart';
+import '../PackageHelper.dart';
 
 class RouteConfigHelper {
   // ignore: omit_local_variable_types

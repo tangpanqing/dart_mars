@@ -7,7 +7,7 @@ class FieldMeta {
   final String def;
   final String index;
   final String autoIncrease;
-  final String commemt;
+  final String comment;
 
   const FieldMeta(
       {this.name,
@@ -16,7 +16,7 @@ class FieldMeta {
       this.def,
       this.index,
       this.autoIncrease,
-      this.commemt});
+      this.comment});
 }
 ''';
 }

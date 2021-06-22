@@ -1,98 +1,32 @@
 import 'dart:io';
 
-import 'PackageHelper.dart';
+import 'package:yaml/yaml.dart';
+
+import '../PackageHelper.dart';
+import 'DataFieldHelper.dart';
 
 class DataBaseHelper {
   static void analyseFile() {
     List<Map<String, dynamic>> allTableStruct = _allTableStruct();
-    //print(allTableStruct);
 
     List<String> sqlList = allTableStruct.map((e) {
-      String s = _buildSql(e);
-      print('-------------');
-      print('-------------');
-      print(s);
-      print('-------------');
-      print('-------------');
-      return s;
+      return DataFieldHelper.buildSql(e);
     }).toList();
     //print(sqlList);
-  }
 
-  static String _buildSql(Map<String, dynamic> map) {
-    String name = map['name'].toString();
+    String devYaml = PackageHelper.getRootPath() + '/env/dev.yaml';
+    String prodYaml = PackageHelper.getRootPath() + '/env/prod.yaml';
+    String testYaml = PackageHelper.getRootPath() + '/env/test.yaml';
 
-    var sb = StringBuffer();
-    sb.write('CREATE TABLE IF NOT EXISTS \`$name\` (\n');
+    var devMap = loadYaml(File(devYaml).readAsStringSync());
+    var prodMap = loadYaml(File(prodYaml).readAsStringSync());
+    var testMap = loadYaml(File(testYaml).readAsStringSync());
 
-    //循环字段
-    (map['fieldList'] as List<dynamic>).forEach((element) {
-      sb.write(_buildField(Map<String, dynamic>.from(element)));
-    });
+    print(devMap['dbHost']);
+    print(prodMap['dbHost']);
+    print(testMap['dbHost']);
 
-    //循环索引
-    (map['fieldList'] as List<dynamic>).forEach((element) {
-      sb.write(_buildIndex(Map<String, dynamic>.from(element)));
-    });
-
-    sb.write(') ENGINE=InnoDB DEFAULT CHARSET=utf8;');
-
-    return sb.toString();
-  }
-
-  static String _buildField(Map<String, dynamic> m) {
-    var sb = StringBuffer();
-    sb.write(_pareFieldName(m));
-    sb.write(' ' + _pareFieldType(m));
-    sb.write(' NOT NULL');
-    sb.write(' ' + _pareFieldDefault(m));
-    sb.write(' ' + _pareFieldAutoIncrease(m));
-    sb.write(' ' + _pareFieldComment(m));
-    sb.write(',\n');
-
-    return sb.toString();
-  }
-
-  static String _pareFieldName(Map<String, dynamic> m) {
-    String name = m['name'].toString();
-    return '`' + name + '`';
-  }
-
-  static String _pareFieldType(Map<String, dynamic> m) {
-    String type = m['type'].toString();
-
-    String length = m.containsKey('length')
-        ? m['length'].toString()
-        : (type == 'varchar' ? '200' : '11');
-
-    return type + '(' + length + ')';
-  }
-
-  static String _pareFieldDefault(Map<String, dynamic> m) {
-    String type = m['type'].toString();
-
-    return 'DEFAULT \'' + (type == 'varchar' ? '' : '0') + '\'';
-  }
-
-  static String _pareFieldAutoIncrease(Map<String, dynamic> m) {
-    String autoIncrease =
-        (m.containsKey('autoIncrease') && m['autoIncrease'] == 'true')
-            ? 'AUTO_INCREMENT'
-            : '';
-
-    return autoIncrease;
-  }
-
-  static String _pareFieldComment(Map<String, dynamic> m) {
-    String comment = m.containsKey('comment')
-        ? 'COMMENT \'' + m['comment'].toString() + '\''
-        : '';
-
-    return comment;
-  }
-
-  static String _buildIndex(Map<String, dynamic> m) {
-    return '';
+    List<dynamic> list = [];
   }
 
   static List<Map<String, dynamic>> _allTableStruct() {
