@@ -6,8 +6,8 @@ import './serve/RouteConfigHelper.dart';
 import './serve/DataBaseHelper.dart';
 
 class ServeHelper {
-  static void run(List<String> arguments) {
-    DataBaseHelper.analyseFile();
+  static Future<void> run(List<String> arguments) async {
+    await DataBaseHelper.analyseFile();
 
     return;
 

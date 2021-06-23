@@ -4,29 +4,117 @@ import 'package:yaml/yaml.dart';
 
 import '../PackageHelper.dart';
 import 'DataFieldHelper.dart';
+import 'package:mysql1/mysql1.dart';
 
 class DataBaseHelper {
-  static void analyseFile() {
+  static Future<void> analyseFile() async {
     List<Map<String, dynamic>> allTableStruct = _allTableStruct();
 
-    List<String> sqlList = allTableStruct.map((e) {
-      return DataFieldHelper.buildSql(e);
-    }).toList();
+    // List<String> sqlList = allTableStruct.map((e) {
+    //   return DataFieldHelper.buildSql(e);
+    // }).toList();
     //print(sqlList);
 
+    Map<String, Map<String, dynamic>> dataBaseStruck =
+        await _getDataBaseStruck();
+
+    List<Map<String, dynamic>> installList = [];
+
+    allTableStruct.forEach((element) {
+      String tableName = element['name'].toString();
+      (element['fieldList'] as List<dynamic>).forEach((elementField) {
+        Map<String, dynamic> elementFieldMap =
+            Map<String, dynamic>.from(elementField);
+        String fieldName = elementFieldMap['name'].toString();
+        String key = tableName + '|' + fieldName;
+
+        if (!dataBaseStruck.containsKey(key)) {
+          installList.add({'table': element, 'field': elementField});
+        } else {
+          Map<String, dynamic> mapFromCode =
+              _getFieldInfo(element, elementField);
+          Map<String, dynamic> mapFromBase = dataBaseStruck[key];
+
+          //print(mapFromCode);
+          //print(mapFromBase);
+
+          String sql = '';
+          mapFromCode.keys.forEach((keyItem) {
+            if (mapFromCode[keyItem].toString() !=
+                mapFromBase[keyItem].toString()) {
+              if ('COLUMN_COMMENT' == keyItem) {
+                sql += ' COMMENT \'' + mapFromCode[keyItem].toString() + '\'';
+              }
+
+              if ('COLUMN_TYPE' == keyItem) {
+                sql += ' ' + mapFromCode[keyItem].toString();
+              }
+            }
+          });
+
+          if (sql != '') {
+            List<String> ss = key.split('|');
+            sql = 'ALTER TABLE ' + ss[0] + ' MODIFY ' + ss[1] + sql;
+            print(sql);
+          }
+        }
+      });
+    });
+
+    print('--ok--');
+  }
+
+  static Map<String, dynamic> _getFieldInfo(
+      Map<String, dynamic> table, Map<String, dynamic> field) {
+    String COLUMN_KEY = '';
+    if ('primary key' == field['index'].toString()) COLUMN_KEY = 'PRI';
+    if ('unique key' == field['index'].toString()) COLUMN_KEY = 'UNI';
+    if ('key' == field['index'].toString()) COLUMN_KEY = 'MUL';
+
+    return {
+      'TABLE_NAME': table['name'].toString(),
+      'COLUMN_NAME': field['name'].toString(),
+      'DATA_TYPE': field['type'].toString(),
+      'COLUMN_TYPE':
+          field['type'].toString() + '(' + field['length'].toString() + ')',
+      'COLUMN_COMMENT': field['comment'].toString(),
+      'COLUMN_KEY': COLUMN_KEY,
+    };
+  }
+
+  static Future<Map<String, Map<String, dynamic>>> _getDataBaseStruck() async {
     String devYaml = PackageHelper.getRootPath() + '/env/dev.yaml';
-    String prodYaml = PackageHelper.getRootPath() + '/env/prod.yaml';
-    String testYaml = PackageHelper.getRootPath() + '/env/test.yaml';
-
     var devMap = loadYaml(File(devYaml).readAsStringSync());
-    var prodMap = loadYaml(File(prodYaml).readAsStringSync());
-    var testMap = loadYaml(File(testYaml).readAsStringSync());
 
-    print(devMap['dbHost']);
-    print(prodMap['dbHost']);
-    print(testMap['dbHost']);
+    var settings = ConnectionSettings(
+        host: devMap['dbHost'].toString(),
+        port: int.parse(devMap['dbPort'].toString()),
+        user: devMap['dbUser'].toString(),
+        password: devMap['dbPassword'].toString(),
+        db: devMap['dbName'].toString());
+    MySqlConnection conn = await MySqlConnection.connect(settings);
+    Results results = await conn.query('''
+    SELECT
+    A.TABLE_NAME,
+    A.COLUMN_NAME,
+    A.DATA_TYPE,
+    A.COLUMN_TYPE,
+    A.COLUMN_COMMENT,
+    A.COLUMN_KEY
+    FROM INFORMATION_SCHEMA.COLUMNS A
+    WHERE A.TABLE_SCHEMA='flm_helper'
+    ORDER BY A.TABLE_NAME,A.ORDINAL_POSITION
+    ''');
 
-    List<dynamic> list = [];
+    Map<String, Map<String, dynamic>> map = {};
+    results.forEach((element) {
+      String key = element.fields['TABLE_NAME'].toString() +
+          '|' +
+          element.fields['COLUMN_NAME'].toString();
+      map[key] = element.fields;
+    });
+
+    return map;
   }
 
   static List<Map<String, dynamic>> _allTableStruct() {
@@ -134,6 +222,16 @@ class DataBaseHelper {
 
     if (!fieldMap.containsKey('name')) {
       fieldMap['name'] = _strToUnderLine(fieldNameSplit[1]);
+    }
+
+    if (!fieldMap.containsKey('length')) {
+      if (fieldMap['type'] == 'varchar') fieldMap['length'] = '255';
+      if (fieldMap['type'] == 'int') fieldMap['length'] = '11';
+      if (fieldMap['type'] == 'bigint') fieldMap['length'] = '20';
+    }
+
+    if (!fieldMap.containsKey('comment')) {
+      fieldMap['comment'] = '';
     }
 
     return fieldMap;
