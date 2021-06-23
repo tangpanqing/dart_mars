@@ -1,5 +1,6 @@
 # Files and directories created by pub
 .dart_tool/
+.dart_tool/package_config.json
 .packages
 
 # Conventional directory for build outputs
@@ -7,3 +8,4 @@ build/
 
 # Directory created by dartdoc
 doc/api/
+pubspec.lock
