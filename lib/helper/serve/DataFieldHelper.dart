@@ -5,6 +5,8 @@ class DataFieldHelper {
         map.containsKey('engine') ? map['engine'].toString() : 'InnoDB';
     String charset =
         map.containsKey('charset') ? map['charset'].toString() : 'utf8mb4';
+    String comment =
+        map.containsKey('comment') ? map['comment'].toString() : '';
 
     var sb = StringBuffer();
     sb.write('CREATE TABLE IF NOT EXISTS \`$name\` (\n');
@@ -16,11 +18,17 @@ class DataFieldHelper {
 
     //循环索引
     (map['fieldList'] as List<dynamic>).forEach((element) {
-      String index = _buildIndex(Map<String, dynamic>.from(element));
-      if (index != '') sb.write(index + ',\n');
+      String key = _buildKey(Map<String, dynamic>.from(element));
+      if (key != '') sb.write(key + ',\n');
     });
 
-    sb.write(') ENGINE=' + engine + ' DEFAULT CHARSET=' + charset + ';');
+    sb.write(') ENGINE=' +
+        engine +
+        ' DEFAULT CHARSET=' +
+        charset +
+        ' COLLATE=utf8mb4_general_ci COMMENT=\'' +
+        comment +
+        '\'');
 
     String s = sb.toString();
     int i = s.lastIndexOf('),');
@@ -30,9 +38,17 @@ class DataFieldHelper {
   }
 
   static String _buildField(Map<String, dynamic> m) {
+    String type = m['type'].toString();
+
     var sb = StringBuffer();
     sb.write(_pareFieldName(m));
     sb.write(_pareFieldType(m));
+
+    if ('varchar' == type) {
+      sb.write(' CHARACTER SET utf8mb4');
+      sb.write(' COLLATE utf8mb4_general_ci');
+    }
+
     sb.write(' NOT NULL');
     sb.write(_pareFieldDefault(m));
     sb.write(_pareFieldAutoIncrease(m));
@@ -89,12 +105,12 @@ class DataFieldHelper {
     return comment;
   }
 
-  static String _buildIndex(Map<String, dynamic> m) {
-    if (!m.containsKey('index') || m['index'].toString() == '') return '';
+  static String _buildKey(Map<String, dynamic> m) {
+    if (!m.containsKey('key') || m['key'].toString() == '') return '';
 
-    String index = m['index'].toString().toUpperCase();
+    String key = m['key'].toString().toUpperCase();
     String name = m['name'].toString();
 
-    return index + ' `' + name + '` (`' + name + '`)';
+    return key + ' `' + name + '` (`' + name + '`)';
   }
 }

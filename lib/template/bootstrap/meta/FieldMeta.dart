@@ -5,7 +5,7 @@ class FieldMeta {
   final String type;
   final String length;
   final String def;
-  final String index;
+  final String key;
   final String autoIncrease;
   final String comment;
 
@@ -14,7 +14,7 @@ class FieldMeta {
       this.type,
       this.length,
       this.def,
-      this.index,
+      this.key,
       this.autoIncrease,
       this.comment});
 }

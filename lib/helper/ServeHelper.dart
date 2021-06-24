@@ -9,15 +9,13 @@ class ServeHelper {
   static Future<void> run(List<String> arguments) async {
     await DataBaseHelper.analyseFile();
 
-    return;
-
     bool ispass = RouteConfigHelper.analyseFile();
     if (!ispass) {
       print('serve has been stop, some mistake has been print above');
       return;
     }
 
-    _runServe(arguments);
+    //_runServe(arguments);
   }
 
   static void _runServe(List<String> arguments) {

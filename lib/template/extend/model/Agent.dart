@@ -5,13 +5,13 @@ import '../../bootstrap/meta/TableMeta.dart';
 
 @TableMeta(comment: '合伙人表', engine: 'InnoDB')
 class Agent {
-  @FieldMeta(autoIncrease: 'true', index: 'primary key')
+  @FieldMeta(autoIncrease: 'true', key: 'primary key')
   int id;
 
-  @FieldMeta(comment: '合伙人id', length: '40', def: '', index: 'unique key')
+  @FieldMeta(comment: '合伙人id', length: '40', def: '', key: 'unique key')
   String agentNo;
 
-  @FieldMeta(comment: '手机号', length: '11', def: '', index: 'key')
+  @FieldMeta(comment: '手机号', length: '11', def: '', key: 'key')
   String agentMobile;
 
   @FieldMeta(comment: '姓名', length: '80', def: '')

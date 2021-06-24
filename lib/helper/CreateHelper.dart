@@ -74,7 +74,7 @@ class CreateHelper {
     'cert/cert.pem': '',
 
     /// log
-    'log/log.txt': '',
+    'log/.gitkeep': '',
 
     /// bootstrap
     'lib/bootstrap/App.dart': App.content,

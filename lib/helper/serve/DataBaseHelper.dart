@@ -14,18 +14,17 @@ class DataBaseHelper {
     var devMap = loadYaml(File(devYaml).readAsStringSync());
 
     await _syncTableField(allTableStructLocal, devMap);
-
-    print('--ok--');
   }
 
   /// 同步本地数据结构到数据库
   static Future<void> _syncTableField(
-      List<Map<String, dynamic>> allTableStructLocal,
-      Map<String, dynamic> devMap) async {
+      List<Map<String, dynamic>> allTableStructLocal, dynamic devMap) async {
+    List<String> sqlList = [];
+
     MySqlConnection conn = await _getConn(devMap);
 
     Map<String, Map<String, dynamic>> tableStruckDb =
-        await _getTableStruckFromDb(conn);
+        await _getTableStruckFromDb(conn, devMap['dbName'].toString());
 
     List<Map<String, dynamic>> insertTableStructLocal = [];
     List<Map<String, dynamic>> updateTableStructLocal = [];
@@ -40,19 +39,15 @@ class DataBaseHelper {
 
     //不存在的表,新建
     if (insertTableStructLocal.isNotEmpty) {
-      List<String> insertTableSql = insertTableStructLocal
-          .map((e) => DataFieldHelper.buildSql(e))
-          .toList();
-      print(insertTableSql);
+      insertTableStructLocal.forEach((element) {
+        sqlList.add(DataFieldHelper.buildSql(element));
+      });
     }
 
-    //存在的表,新建字段或者修改字段
+    //存在的表,新建字段或者修改字段,新建索引或者修改索引
     if (updateTableStructLocal.isNotEmpty) {
       Map<String, Map<String, dynamic>> fieldStruckDb =
-          await _getFieldStruckFromDb(conn);
-
-      List<String> insertFieldSql = [];
-      List<String> updateFieldSql = [];
+          await _getFieldStruckFromDb(conn, devMap['dbName'].toString());
 
       updateTableStructLocal.forEach((table) {
         (table['fieldList'] as List<dynamic>).forEach((fieldDynamic) {
@@ -62,81 +57,104 @@ class DataBaseHelper {
               table['name'].toString() + '|' + field['name'].toString();
 
           if (!fieldStruckDb.containsKey(key)) {
-            insertFieldSql.add(_getInsertFieldSql(table, field));
+            sqlList.add(_getAddOrModifyFieldSql(table, field, 'ADD'));
           } else {
-            updateFieldSql
-                .addAll(_getUpdateFieldSql(table, field, fieldStruckDb[key]));
+            Map<String, dynamic> fieldDb = fieldStruckDb[key];
+            Map<String, dynamic> fieldLocal =
+                _getFieldMapFromLocal(table, field);
+
+            bool isSame = fieldDb.toString() == fieldLocal.toString();
+
+            if (!isSame) {
+              if (fieldDb['COLUMN_KEY'].toString() ==
+                  fieldLocal['COLUMN_KEY'].toString()) {
+                sqlList.add(_getAddOrModifyFieldSql(table, field, 'MODIFY'));
+              } else {
+                //删掉已有的
+                if (fieldDb['COLUMN_KEY'].toString() != '') {
+                  sqlList.add('alter table ' +
+                      table['name'].toString() +
+                      ' drop index ' +
+                      field['name'].toString());
+                }
+
+                //增加新的
+                if (fieldLocal['COLUMN_KEY'].toString() != '') {
+                  String key = '';
+
+                  if ('PRI' == fieldLocal['COLUMN_KEY'].toString()) {
+                    key = 'primary key';
+                  }
+
+                  if ('UNI' == fieldLocal['COLUMN_KEY'].toString()) {
+                    key = 'unique';
+                  }
+
+                  if ('MUL' == fieldLocal['COLUMN_KEY'].toString()) {
+                    key = 'index';
+                  }
+
+                  sqlList.add('alter table ' +
+                      table['name'].toString() +
+                      ' add ' +
+                      key +
+                      ' (' +
+                      field['name'].toString() +
+                      ')');
+                }
+              }
+            }
           }
         });
       });
+    }
 
-      print(insertFieldSql);
-      print(updateFieldSql);
+    if (sqlList.isNotEmpty) {
+      print('database stuck should be modify');
+      sqlList.forEach((sql) async {
+        print(sql);
+        await conn.query(sql);
+      });
     }
   }
 
-  /// 生成创建字段SQL语句
-  static String _getInsertFieldSql(
-      Map<String, dynamic> table, Map<String, dynamic> field) {
+  /// 生成添加或者修改字段SQL语句
+  static String _getAddOrModifyFieldSql(
+      Map<String, dynamic> table, Map<String, dynamic> field, String optType) {
     Map<String, dynamic> fieldMapFromLocal =
         _getFieldMapFromLocal(table, field);
 
-    String sql = '';
-    fieldMapFromLocal.keys.forEach((keyItem) {
-      sql += _fieldTag(keyItem, fieldMapFromLocal[keyItem]);
-    });
-
-    sql = 'ALTER TABLE ' +
+    String sql = 'ALTER TABLE ' +
         table['name'].toString() +
-        ' ADD ' +
-        field['name'].toString() +
-        sql;
-    return sql;
-  }
+        ' $optType ' +
+        field['name'].toString();
 
-  /// 生成更新字段SQL语句
-  static List<String> _getUpdateFieldSql(Map<String, dynamic> table,
-      Map<String, dynamic> field, Map<String, dynamic> mapFromBase) {
-    Map<String, dynamic> fieldMapFromLocal =
-        _getFieldMapFromLocal(table, field);
-
-    String sql = '';
     fieldMapFromLocal.keys.forEach((keyItem) {
-      if (fieldMapFromLocal[keyItem].toString() !=
-          mapFromBase[keyItem].toString()) {
-        sql += _fieldTag(keyItem, fieldMapFromLocal[keyItem]);
-      }
+      sql += _fieldTag(
+          table['type'].toString(), keyItem, fieldMapFromLocal[keyItem]);
     });
 
-    if (sql != '') {
-      sql = 'ALTER TABLE ' +
-          table['name'].toString() +
-          ' MODIFY ' +
-          field['name'].toString() +
-          sql;
-      return [sql];
-    }
-
-    return [];
+    return sql;
   }
 
   /// 从本地数据读取字段结构
   static Map<String, dynamic> _getFieldMapFromLocal(
       Map<String, dynamic> table, Map<String, dynamic> field) {
-    String COLUMN_TYPE =
-        field['type'].toString() + '(' + field['length'].toString() + ')';
-
     String COLUMN_KEY = '';
-    if ('primary key' == field['index'].toString()) COLUMN_KEY = 'PRI';
-    if ('unique key' == field['index'].toString()) COLUMN_KEY = 'UNI';
-    if ('key' == field['index'].toString()) COLUMN_KEY = 'MUL';
+    if ('primary key' == field['key'].toString()) COLUMN_KEY = 'PRI';
+    if ('unique key' == field['key'].toString()) COLUMN_KEY = 'UNI';
+    if ('key' == field['key'].toString()) COLUMN_KEY = 'MUL';
 
     return {
       'TABLE_NAME': table['name'].toString(),
       'COLUMN_NAME': field['name'].toString(),
-      'COLUMN_DEFAULT': field['def'].toString(),
+      'DATA_TYPE': field['type'].toString(),
+      'COLUMN_TYPE':
+          field['type'].toString() + '(' + field['length'].toString() + ')',
+      'CHARACTER_SET_NAME': field['character'].toString(),
+      'COLLATION_NAME': field['collation'].toString(),
       'IS_NULLABLE': field['nullAble'].toString(),
-      'COLUMN_TYPE': COLUMN_TYPE,
+      'COLUMN_DEFAULT': field['def'].toString(),
       'COLUMN_KEY': COLUMN_KEY,
       'COLUMN_COMMENT': field['comment'].toString(),
     };
@@ -144,18 +162,21 @@ class DataBaseHelper {
 
   /// 从数据库中读取字段结构
   static Future<Map<String, Map<String, dynamic>>> _getFieldStruckFromDb(
-      MySqlConnection conn) async {
+      MySqlConnection conn, String dataBaseName) async {
     Results results = await conn.query('''
     SELECT
     A.TABLE_NAME,
     A.COLUMN_NAME,
-    A.COLUMN_DEFAULT,
-    A.IS_NULLABLE,
+    A.DATA_TYPE,
     A.COLUMN_TYPE,
+    A.CHARACTER_SET_NAME,
+    A.COLLATION_NAME,
+    A.IS_NULLABLE,
+    A.COLUMN_DEFAULT,
     A.COLUMN_KEY,
     A.COLUMN_COMMENT
     FROM INFORMATION_SCHEMA.COLUMNS A
-    WHERE A.TABLE_SCHEMA='flm_helper'
+    WHERE A.TABLE_SCHEMA='$dataBaseName'
     ORDER BY A.TABLE_NAME,A.ORDINAL_POSITION
     ''');
 
@@ -172,12 +193,12 @@ class DataBaseHelper {
 
   /// 从数据库中读取表结构
   static Future<Map<String, Map<String, dynamic>>> _getTableStruckFromDb(
-      MySqlConnection conn) async {
+      MySqlConnection conn, String dataBaseName) async {
     Results results = await conn.query('''
     SELECT
     A.TABLE_NAME
     FROM INFORMATION_SCHEMA.TABLES A
-    WHERE A.TABLE_SCHEMA='flm_helper'
+    WHERE A.TABLE_SCHEMA='$dataBaseName'
     ORDER BY A.TABLE_NAME
     ''');
 
@@ -191,7 +212,7 @@ class DataBaseHelper {
   }
 
   /// 获取数据库连接
-  static Future<MySqlConnection> _getConn(Map<String, dynamic> devMap) async {
+  static Future<MySqlConnection> _getConn(dynamic devMap) async {
     var settings = ConnectionSettings(
         host: devMap['dbHost'].toString(),
         port: int.parse(devMap['dbPort'].toString()),
@@ -325,6 +346,16 @@ class DataBaseHelper {
       fieldMap['comment'] = '';
     }
 
+    if (fieldMap['type'] == 'varchar') {
+      if (!fieldMap.containsKey('character')) {
+        fieldMap['character'] = 'utf8mb4';
+      }
+
+      if (!fieldMap.containsKey('collation')) {
+        fieldMap['collation'] = 'utf8mb4_general_ci';
+      }
+    }
+
     if (!fieldMap.containsKey('nullAble')) {
       fieldMap['nullAble'] = 'NO';
     }
@@ -346,15 +377,37 @@ class DataBaseHelper {
   }
 
   /// 字段信息
-  static String _fieldTag(String keyItem, dynamic valueItem) {
+  static String _fieldTag(String dataType, String keyItem, dynamic valueItem) {
     String sql = '';
 
     if ('COLUMN_TYPE' == keyItem) {
       sql += ' ' + valueItem.toString();
     }
 
+    if (dataType == 'varchar') {
+      if ('CHARACTER_SET_NAME' == keyItem) {
+        sql += ' CHARACTER SET ' + valueItem.toString();
+      }
+
+      if ('COLLATION_NAME' == keyItem) {
+        sql += ' COLLATE ' + valueItem.toString();
+      }
+    }
+
+    if ('IS_NULLABLE' == keyItem) {
+      sql += ' NOT NULL';
+    }
+
+    if ('COLUMN_DEFAULT' == keyItem) {
+      sql += ' DEFAULT \'' + valueItem.toString() + '\'';
+    }
+
     if ('COLUMN_COMMENT' == keyItem) {
       sql += ' COMMENT \'' + valueItem.toString() + '\'';
+    }
+
+    if ('COLUMN_KEY' == keyItem) {
+      sql += valueItem.toString();
     }
 
     return sql;
