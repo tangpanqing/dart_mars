@@ -15,7 +15,7 @@ class ServeHelper {
       return;
     }
 
-    //_runServe(arguments);
+    _runServe(arguments);
   }
 
   static void _runServe(List<String> arguments) {
