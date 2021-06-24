@@ -7,7 +7,7 @@ import './serve/DataBaseHelper.dart';
 
 class ServeHelper {
   static Future<void> run(List<String> arguments) async {
-    await DataBaseHelper.analyseFile();
+    //await DataBaseHelper.analyseFile();
 
     bool ispass = RouteConfigHelper.analyseFile();
     if (!ispass) {
