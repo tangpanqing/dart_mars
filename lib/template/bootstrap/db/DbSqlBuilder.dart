@@ -173,7 +173,7 @@ class DbSqlBuilder {
   static String _parseWhere(Map<String, dynamic> options, List values) {
     if (!options.containsKey("where")) return "";
 
-    List<DbColumn> list = options["where"];
+    List<DbColumn> list = options["where"] as List<DbColumn>;
     if (list.length == 0) return "";
 
     List<String> l = list.map((e) => _parseWhereItem(e, values)).toList();
@@ -181,13 +181,9 @@ class DbSqlBuilder {
     return " WHERE " + l.join(" AND ");
   }
 
+  // total 14 
   static String _parseWhereItem(DbColumn item, List values) {
     String optName = item.optName.toUpperCase();
-
-    if (item.fieldVal.runtimeType == DbRaw) {
-      String s = (item.fieldVal as DbRaw).raw;
-      return item.fieldName + " " + optName + " " + s;
-    }
 
     if (['=', '!=', '<>', '>', '<', '>=', '<='].contains(optName)) {
       values.add(item.fieldVal);
@@ -245,7 +241,9 @@ class DbSqlBuilder {
   static String _parseHaving(Map<String, dynamic> options, List values) {
     if (!options.containsKey("having")) return "";
 
-    List<DbColumn> list = options["having"];
+    List<DbColumn> list = options["having"] as List<DbColumn>;
+    if (list.length == 0) return "";
+
     List<String> l = list.map((e) => _parseWhereItem(e, values)).toList();
 
     return " HAVING " + l.join(" AND ");
