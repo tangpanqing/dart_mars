@@ -16,7 +16,12 @@ class DbSqlBuilder {
       'DELETE%EXTRA% FROM %TABLE%%USING%%JOIN%%WHERE%%ORDER%%LIMIT%%LOCK%%COMMENT%';
 
   static String insert(Map<String, dynamic> options, List values) {
-    Map<String, dynamic> data = options["data"] as Map<String, dynamic>;
+    Map<String, dynamic> data = {};
+    try {
+      data = options["data"] as Map<String, dynamic>;
+    } catch (e) {
+      throw 'data for insert is not map';
+    }
 
     List keys = [];
     List vals = [];
@@ -98,20 +103,25 @@ class DbSqlBuilder {
     return sql;
   }
 
-  static String _parseData(Map<String, dynamic> options, List values) {
+  static String _parseData(Map<String, dynamic> options, List<dynamic> values) {
     if (!options.containsKey("data")) return "";
 
-    List data = options["data"] as List;
+    List<dynamic> data = [];
+    try {
+      data = options["data"] as List<dynamic>;
+    } catch (e) {
+      throw 'data for parseData is not list';
+    }
 
     values.addAll(data);
     return data.map((e) => "?").join(",");
   }
 
-  static String _parseSet(Map<String, dynamic> options, List values) {
+  static String _parseSet(Map<String, dynamic> options, List<dynamic> values) {
     if (!options.containsKey("set")) return "";
 
-    List list = [];
-    Map map = options["set"];
+    List<String> list = [];
+    Map<String, dynamic> map = Map<String, dynamic>.from(options["set"]);
 
     map.forEach((key, value) {
       if (value.runtimeType == DbRaw) {
@@ -134,7 +144,12 @@ class DbSqlBuilder {
   static String _parseDistinct(Map<String, dynamic> options) {
     if (!options.containsKey("distinct")) return "";
 
-    bool distinct = options["distinct"] as bool;
+    bool distinct = false;
+    try {
+      distinct = options["distinct"] as bool;
+    } catch (e) {
+      throw 'distinct for parseDistinct is not bool';
+    }
 
     return distinct ? " Distinct" : "";
   }
@@ -160,7 +175,12 @@ class DbSqlBuilder {
   static String _parseJoin(Map<String, dynamic> options) {
     if (!options.containsKey("join")) return "";
 
-    List list = options["join"] as List;
+    List<List<String>> list = [];
+    try {
+      list = options["join"] as List<List<String>>;
+    } catch (e) {
+      throw 'list for parseJoin is not List<List<String>>';
+    }
 
     return list
         .map((e) {
@@ -173,7 +193,13 @@ class DbSqlBuilder {
   static String _parseWhere(Map<String, dynamic> options, List values) {
     if (!options.containsKey("where")) return "";
 
-    List<DbColumn> list = options["where"] as List<DbColumn>;
+    List<DbColumn> list = [];
+    try {
+      list = options["where"] as List<DbColumn>;
+    } catch (e) {
+      throw 'list for parseWhere is not List<DbColumn>';
+    }
+
     if (list.length == 0) return "";
 
     List<String> l = list.map((e) => _parseWhereItem(e, values)).toList();
@@ -181,7 +207,6 @@ class DbSqlBuilder {
     return " WHERE " + l.join(" AND ");
   }
 
-  // total 14 
   static String _parseWhereItem(DbColumn item, List values) {
     String optName = item.optName.toUpperCase();
 
@@ -241,7 +266,13 @@ class DbSqlBuilder {
   static String _parseHaving(Map<String, dynamic> options, List values) {
     if (!options.containsKey("having")) return "";
 
-    List<DbColumn> list = options["having"] as List<DbColumn>;
+    List<DbColumn> list = [];
+    try {
+      list = options["having"] as List<DbColumn>;
+    } catch (e) {
+      throw 'list for parseHaving is not List<DbColumn>';
+    }
+
     if (list.length == 0) return "";
 
     List<String> l = list.map((e) => _parseWhereItem(e, values)).toList();
@@ -272,7 +303,12 @@ class DbSqlBuilder {
   static String _parseLock(Map<String, dynamic> options) {
     if (!options.containsKey("lock")) return "";
 
-    bool lock = options["lock"] as bool;
+    bool lock = false;
+    try {
+      lock = options["lock"] as bool;
+    } catch (e) {
+      throw 'lock for parseLock is not bool';
+    }
 
     return lock ? " FOR UPDATE" : "";
   }
