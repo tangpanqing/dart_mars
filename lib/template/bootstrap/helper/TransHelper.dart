@@ -3,7 +3,7 @@ class TransHelper {
 import '../db/Db.dart';
 
 class TransHelper {
-  static Future<void> unit(Function tryFunc, Function catchFunc) async {
+  static Future<void> unit({Function tryFunc, Function catchFunc}) async {
     try {
       await Db.startTrans();
       await tryFunc();
