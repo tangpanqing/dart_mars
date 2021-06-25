@@ -182,65 +182,58 @@ class DbSqlBuilder {
   }
 
   static String _parseWhereItem(DbColumn item, List values) {
+    String optName = item.optName.toUpperCase();
+
     if (item.fieldVal.runtimeType == DbRaw) {
-      return item.fieldName +
-          " " +
-          item.optName.toUpperCase() +
-          " " +
-          (item.fieldVal as DbRaw).raw;
+      String s = (item.fieldVal as DbRaw).raw;
+      return item.fieldName + " " + optName + " " + s;
     }
 
-    if ("=" == item.optName.toUpperCase() ||
-        "!=" == item.optName.toUpperCase() ||
-        "<>" == item.optName.toUpperCase() ||
-        ">" == item.optName.toUpperCase() ||
-        "<" == item.optName.toUpperCase() ||
-        ">=" == item.optName.toUpperCase() ||
-        "<=" == item.optName.toUpperCase()) {
+    if (['=', '!=', '<>', '>', '<', '>=', '<='].contains(optName)) {
       values.add(item.fieldVal);
-      return item.fieldName + " " + item.optName.toUpperCase() + " " + "?";
+      return item.fieldName + ' ' + optName + ' ' + '?';
     }
 
-    if ("IN" == item.optName.toUpperCase() ||
-        "NOT IN" == item.optName.toUpperCase()) {
+    if (['IN', 'NOT IN'].contains(optName)) {
       List inValue = item.fieldVal;
-      String s = inValue.map((e) => "?").toList().join(",");
       values.addAll(inValue);
-      return item.fieldName +
-          " " +
-          item.optName.toUpperCase() +
-          " " +
-          "(" +
-          s +
-          ")";
+
+      String s = inValue.map((e) => '?').toList().join(',');
+      s = '(' + s + ')';
+
+      return item.fieldName + ' ' + optName + ' ' + s;
     }
 
-    if ("BETWEEN" == item.optName.toUpperCase() ||
-        "NOT BETWEEN" == item.optName.toUpperCase()) {
+    if (['BETWEEN', 'NOT BETWEEN'].contains(optName)) {
       List inValue = item.fieldVal;
-      String s = inValue.map((e) => "?").toList().join(" AND ");
       values.addAll(inValue);
-      return item.fieldName + " " + item.optName.toUpperCase() + " " + s;
+
+      String s = inValue.map((e) => '?').toList().join(' AND ');
+      return item.fieldName + ' ' + optName + ' ' + s;
     }
 
-    if ("LIKE" == item.optName.toUpperCase() ||
-        "NOT LIKE" == item.optName.toUpperCase()) {
+    if (['LIKE', 'NOT LIKE'].contains(optName)) {
       String s = item.fieldVal.toString();
 
       List<String> l = [];
       for (int i = 0; i < s.length; i++) {
-        if (s[i] != "%") l.add(s[i]);
+        if (s[i] != '%') l.add(s[i]);
       }
       String value = l.join();
       values.add(value);
 
-      s = s.replaceAll(value, "?");
-      s = "concat(" + s.split("").join(",").replaceAll("%", "'%'") + ")";
+      s = s.replaceAll(value, '?');
+      s = 'concat(' + s.split('').join(',').replaceAll("%", "'%'") + ')';
 
-      return item.fieldName + " " + item.optName.toUpperCase() + " " + s;
+      return item.fieldName + ' ' + optName + ' ' + s;
     }
 
-    return "whereItem";
+    if ('EXP' == optName) {
+      String s = item.fieldVal.toString();
+      return item.fieldName + s;
+    }
+
+    return "";
   }
 
   static String _parseGroup(Map<String, dynamic> options) {

@@ -11,7 +11,6 @@ import '../config/database.dart';
 
 class App {
   static String _className = 'App';
-  static List<String> serveList = ['dev', 'test', 'prod'];
   static String serveDefault = 'prod';
   static int portDefault = 80;
   static int portHttpsDefault = 443;
@@ -55,9 +54,6 @@ class App {
     String serve = argMap["serve"].toString();
 
     if (serve.isEmpty) return serveDefault;
-
-    if (!serveList.contains(serve))
-      throw 'param serve only accept value form [' + serveList.join(',') + ']';
 
     return serve;
   }
