@@ -28,6 +28,7 @@ import '../template/bootstrap/helper/PrintHelper.dart';
 import '../template/bootstrap/helper/RequestHelper.dart';
 import '../template/bootstrap/helper/RouteHelper.dart';
 import '../template/bootstrap/helper/VerifyHelper.dart';
+import '../template/bootstrap/helper/TransHelper.dart';
 
 import '../template/bootstrap/meta/RouteMeta.dart';
 import '../template/bootstrap/meta/TableMeta.dart';
@@ -97,6 +98,7 @@ class CreateHelper {
     'lib/bootstrap/helper/RequestHelper.dart': RequestHelper.content,
     'lib/bootstrap/helper/RouteHelper.dart': RouteHelper.content,
     'lib/bootstrap/helper/VerifyHelper.dart': VerifyHelper.content,
+    'lib/bootstrap/helper/TransHelper.dart': TransHelper.content,
 
     /// bootstrap crypto
     'lib/bootstrap/crypto/AES.dart': AES.content,
