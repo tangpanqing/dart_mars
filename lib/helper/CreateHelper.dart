@@ -21,6 +21,8 @@ import '../template/bootstrap/db/DbSqlBuilder.dart';
 import '../template/bootstrap/db/DbColumn.dart';
 import '../template/bootstrap/db/DbRaw.dart';
 
+import '../template/bootstrap/redis/Redis.dart';
+
 import '../template/bootstrap/helper/LogHelper.dart';
 import '../template/bootstrap/helper/CommonHelper.dart';
 import '../template/bootstrap/helper/ConvertHelper.dart';
@@ -89,6 +91,9 @@ class CreateHelper {
     'lib/bootstrap/db/DbConnection.dart': DbConnection.content,
     'lib/bootstrap/db/DbRaw.dart': DbRaw.content,
     'lib/bootstrap/db/DbSqlBuilder.dart': DbSqlBuilder.content,
+
+    /// bootstrap redis
+    'lib/bootstrap/redis/Redis.dart': Redis.content,
 
     /// bootstrap helper
     'lib/bootstrap/helper/CommonHelper.dart': CommonHelper.content,

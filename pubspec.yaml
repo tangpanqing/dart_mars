@@ -1,6 +1,6 @@
 name: dart_mars
 description: A sample command-line application.
-version: 1.0.3
+version: 1.0.4
 homepage: https://github.com/tangpanqing/dart_mars
 
 environment:
@@ -10,7 +10,6 @@ dependencies:
   process_run: ^0.12.1
   yaml: ^3.1.0
   mysql1: ^0.19.2
-  redis: ^1.4.0
 
 dev_dependencies:
   pedantic: ^1.9.0

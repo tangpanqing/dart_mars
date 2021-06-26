@@ -6,6 +6,7 @@ environment:
 dependencies:
   yaml: ^3.1.0
   mysql1: ^0.19.2
+  redis: ^1.4.0
   mime: ^1.0.0
   encrypt: ^5.0.0
 ''';
