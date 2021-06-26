@@ -17,6 +17,10 @@ class Redis {
     _command = await _conn.connect(host, port);
   }
 
+  Future<void> connectSecure(String host, int port) async {
+    _command = await _conn.connectSecure(host, port);
+  }
+
   Future<void> close() async => await _conn.close();
 
   Future<dynamic> sendObject(List<dynamic> params) async =>
