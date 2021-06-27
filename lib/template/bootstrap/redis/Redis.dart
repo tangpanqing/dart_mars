@@ -408,50 +408,77 @@ class Redis {
       String commandName, List<dynamic> param1, List<dynamic> param2) async {
     List<dynamic> param = [];
     param.add(commandName);
-    param.addAll(param1);
-    param.addAll(param2);
+    if (param1.isNotEmpty) param.addAll(param1);
+    if (param2.isNotEmpty) param.addAll(param2);
 
     return await sendObject(param);
   }
 
-   @TODO
-   Future<dynamic> bitop(){}
-   @TODO
-   Future<dynamic> linsert(){}
-   @TODO
-   Future<dynamic> object(){}
-   @TODO
-   Future<dynamic> hscan(){}
-   @TODO
-   Future<dynamic> sscan(){}
-   @TODO
-   Future<dynamic> restore(){}
-   @TODO
-   Future<dynamic> zscan(){}
-   @TODO
-   Future<dynamic> scan(){}
-   @TODO
-   Future<dynamic> eval(){}
-   @TODO
-   Future<dynamic> publish(){}
-   @TODO
-   Future<dynamic> evalsha(){}
-   @TODO
-   Future<dynamic> pubsub(){}
-   @TODO
-   Future<dynamic> scriptExists(){}
-   @TODO
-   Future<dynamic> scriptLoad(){}
-   @TODO
-   Future<dynamic> debugObject(){}
-   @TODO
-   Future<dynamic> debugSegfault(){}
-   @TODO
-   Future<dynamic> monitor(){}
-   @TODO
-   Future<dynamic> psync(){}
-   @TODO
-   Future<dynamic> slowlog(){}
+  /// operation 可以是 AND 、 OR 、 NOT 、 XOR 这四种操作中的任意一种：
+  Future<dynamic> bitop(
+          String operation, String destkey, List<String> keys) async =>
+      await _getRes('BITOP', [operation, destkey], keys);
+
+  /// postion 可以是 BEFORE, AFTER 这2种操作中的任意一种
+  Future<dynamic> linsert(
+          String key, String postion, String pivot, String value) async =>
+      await _getRes('LINSERT', [key, postion, pivot, value], []);
+
+  Future<dynamic> object(String subcommand, List<String> args) async =>
+      await _getRes('OBJECT', [subcommand], args);
+
+  Future<dynamic> hscan(String key, String cursor, List<String> pattern,
+          List<int> count) async =>
+      await _getRes('HSCAN', []..addAll([key, cursor])..addAll(pattern), count);
+
+  Future<dynamic> sscan(String key, String cursor, List<String> pattern,
+          List<int> count) async =>
+      await _getRes('SSCAN', []..addAll([key, cursor])..addAll(pattern), count);
+
+  Future<dynamic> zscan(String key, String cursor, List<String> pattern,
+          List<int> count) async =>
+      await _getRes('ZSCAN', []..addAll([key, cursor])..addAll(pattern), count);
+
+  Future<dynamic> scan(
+          String cursor, List<String> pattern, List<int> count) async =>
+      await _getRes('SCAN', []..addAll([cursor])..addAll(pattern), count);
+
+  Future<dynamic> restore(String key, int ttl, String serializedValue) async =>
+      await _getRes('RESTORE', [key, ttl, serializedValue], []);
+
+  Future<dynamic> eval(String script, int numkeys, List<String> keys,
+          List<String> args) async =>
+      await _getRes('EVAL', [script, numkeys], []..addAll(keys)..addAll(args));
+
+  Future<dynamic> publish(String channel, String message) async =>
+      await _getRes('PUBLISH', [channel, message], []);
+
+  Future<dynamic> evalsha(String sha1, int numkeys, List<String> keys,
+          List<String> args) async =>
+      await _getRes('EVALSHA', [sha1, numkeys], []..addAll(keys)..addAll(args));
+
+  Future<dynamic> pubsub(String subcommand, List<String> args) async =>
+      await _getRes('PUBSUB', [subcommand], args);
+
+  Future<dynamic> scriptExists(List<String> args) async =>
+      await _getRes('SCRIPT', ['EXISTS'], args);
+
+  Future<dynamic> scriptLoad(String script) async =>
+      await _getRes('SCRIPT', ['LOAD'], [script]);
+
+  Future<dynamic> debugObject(String key) async =>
+      await _getRes('DEBUG', ['OBJECT'], [key]);
+
+  Future<dynamic> debugSegfault() async =>
+      await _getRes('DEBUG', ['SEGFAULT'], []);
+
+  Future<dynamic> monitor() async => await _getRes('MONITOR', [], []);
+
+  Future<dynamic> psync(String masterRunId, int offset) async =>
+      await _getRes('PSYNC', [masterRunId], [offset]);
+
+  Future<dynamic> slowlog(String subcommand, List<String> args) async =>
+      await _getRes('SLOWLOG', [subcommand], args);
 }
   ''';
 }
