@@ -413,6 +413,45 @@ class Redis {
 
     return await sendObject(param);
   }
+
+   @TODO
+   Future<dynamic> bitop(){}
+   @TODO
+   Future<dynamic> linsert(){}
+   @TODO
+   Future<dynamic> object(){}
+   @TODO
+   Future<dynamic> hscan(){}
+   @TODO
+   Future<dynamic> sscan(){}
+   @TODO
+   Future<dynamic> restore(){}
+   @TODO
+   Future<dynamic> zscan(){}
+   @TODO
+   Future<dynamic> scan(){}
+   @TODO
+   Future<dynamic> eval(){}
+   @TODO
+   Future<dynamic> publish(){}
+   @TODO
+   Future<dynamic> evalsha(){}
+   @TODO
+   Future<dynamic> pubsub(){}
+   @TODO
+   Future<dynamic> scriptExists(){}
+   @TODO
+   Future<dynamic> scriptLoad(){}
+   @TODO
+   Future<dynamic> debugObject(){}
+   @TODO
+   Future<dynamic> debugSegfault(){}
+   @TODO
+   Future<dynamic> monitor(){}
+   @TODO
+   Future<dynamic> psync(){}
+   @TODO
+   Future<dynamic> slowlog(){}
 }
   ''';
 }
