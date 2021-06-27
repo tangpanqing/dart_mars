@@ -43,38 +43,40 @@ main() {
     }
   });
 
-  List<String> all = _merge(list1, list2);
-  all = _unique(all);
+  List<String> all = ListHelper.merge(list1, list2);
+  all = ListHelper.unique(all);
 
-  List<String> list1_meiyou = _diff(all, list1);
+  List<String> list1_meiyou = ListHelper.diff(all, list1);
   print(list1_meiyou);
 
-  List<String> list2_meiyou = _diff(all, list2);
+  List<String> list2_meiyou = ListHelper.diff(all, list2);
   print(list2_meiyou);
 }
 
-List<String> _merge(List<String> a, List<String> b) {
-  List<String> c = [];
-  c.addAll(a);
-  c.addAll(b);
-  return c;
-}
+class ListHelper {
+  static List<String> merge(List<String> a, List<String> b) {
+    List<String> c = [];
+    c.addAll(a);
+    c.addAll(b);
+    return c;
+  }
 
-List<String> _unique(List<String> c) {
-  Set temp = Set();
-  temp.addAll(c);
-  return temp.map((e) => e.toString()).toList();
-}
+  static List<String> unique(List<String> c) {
+    Set temp = Set();
+    temp.addAll(c);
+    return temp.map((e) => e.toString()).toList();
+  }
 
 // a有, b没有
-List<String> _diff(List<String> a, List<String> b) {
-  List<String> c = [];
+  static List<String> diff(List<String> a, List<String> b) {
+    List<String> c = [];
 
-  a.forEach((element) {
-    if (!b.contains(element)) {
-      c.add(element);
-    }
-  });
+    a.forEach((element) {
+      if (!b.contains(element)) {
+        c.add(element);
+      }
+    });
 
-  return c;
+    return c;
+  }
 }
