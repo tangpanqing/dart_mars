@@ -230,7 +230,24 @@ class DbSqlBuilder {
       values.addAll(inValue);
 
       String s = inValue.map((e) => '?').toList().join(' AND ');
-      return item.fieldName + ' ' + optName + ' ' + s;
+      String res = item.fieldName + ' ' + optName + ' ' + s;
+
+      //如果是字符串比较,增加长度限制
+      if (inValue[0].runtimeType.toString() == "String" ||
+          inValue[1].runtimeType.toString() == "String") {
+        List<int> lengList = inValue.map((e) => e.toString().length).toList();
+        values.addAll(lengList);
+
+        String s1 = ' AND length(' +
+            item.fieldName +
+            ') >= ? AND length(' +
+            item.fieldName +
+            ') <= ?';
+
+        res = res + s1;
+      }
+
+      return res;
     }
 
     if (['LIKE', 'NOT LIKE'].contains(optName)) {
