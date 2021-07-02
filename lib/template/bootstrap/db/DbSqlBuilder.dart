@@ -217,6 +217,10 @@ class DbSqlBuilder {
 
     if (['IN', 'NOT IN'].contains(optName)) {
       List inValue = item.fieldVal;
+
+      if (inValue.length == 0)
+        return item.fieldName + ' ' + optName + ' (\\'\\')';
+
       values.addAll(inValue);
 
       String s = inValue.map((e) => '?').toList().join(',');
