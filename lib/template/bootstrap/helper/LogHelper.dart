@@ -15,7 +15,7 @@ class LogHelper {
   static void init() {
     String scriptName = CommonHelper.scriptName();
 
-    Logger.root.level = Level.ALL;
+    Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen((LogRecord rec) {
       List<String> l = logForm.split(',').map((e) => _text(e, rec)).toList();
 
