@@ -39,7 +39,14 @@ class DbConnection {
 
     List<Map<String, dynamic>> list = [];
     result.forEach((element) {
-      list.add(element.fields);
+      Map<String, dynamic> fields = element.fields;
+      fields.forEach((key, value) {
+        if (value is Blob) {
+          fields[key] = value.toString();
+        }
+      });
+
+      list.add(fields);
     });
 
     return list;
