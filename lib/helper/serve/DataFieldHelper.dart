@@ -74,7 +74,7 @@ class DataFieldHelper {
 
   static String _defaultLength(String type) {
     if (type == 'varchar') return '255';
-    if (type == 'tintint') return '4';
+    if (type == 'tinyint') return '4';
     if (type == 'int') return '11';
     if (type == 'bigint') return '20';
     return '';

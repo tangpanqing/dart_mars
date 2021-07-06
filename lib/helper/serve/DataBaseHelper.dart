@@ -7,6 +7,13 @@ import 'DataFieldHelper.dart';
 import 'package:mysql1/mysql1.dart';
 
 class DataBaseHelper {
+  static Map<String, String> defaultLengthMap = {
+    'varchar': '255',
+    'tinyint': '4',
+    'int': '11',
+    'bigint': '20'
+  };
+
   static Future<void> analyseFile() async {
     List<Map<String, dynamic>> allTableStructLocal = _getTableStructFromLocal();
 
@@ -66,6 +73,10 @@ class DataBaseHelper {
             bool isSame = fieldDb.toString() == fieldLocal.toString();
 
             if (!isSame) {
+              //print('---------------------');
+              //print(fieldDb);
+              //print(fieldLocal);
+
               if (fieldDb['COLUMN_KEY'].toString() ==
                   fieldLocal['COLUMN_KEY'].toString()) {
                 sqlList.add(_getAddOrModifyFieldSql(table, field, 'MODIFY'));
@@ -145,12 +156,19 @@ class DataBaseHelper {
     if ('unique key' == field['key'].toString()) COLUMN_KEY = 'UNI';
     if ('key' == field['key'].toString()) COLUMN_KEY = 'MUL';
 
+    String COLUMN_TYPE = '';
+    if (field['type'].toString() != 'text') {
+      COLUMN_TYPE =
+          field['type'].toString() + '(' + field['length'].toString() + ')';
+    } else {
+      COLUMN_TYPE = field['type'].toString();
+    }
+
     return {
       'TABLE_NAME': table['name'].toString(),
       'COLUMN_NAME': field['name'].toString(),
       'DATA_TYPE': field['type'].toString(),
-      'COLUMN_TYPE':
-          field['type'].toString() + '(' + field['length'].toString() + ')',
+      'COLUMN_TYPE': COLUMN_TYPE,
       'CHARACTER_SET_NAME': field['character'].toString(),
       'COLLATION_NAME': field['collation'].toString(),
       'IS_NULLABLE': field['nullAble'].toString(),
@@ -236,7 +254,8 @@ class DataBaseHelper {
       var fileContent = File(fileName).readAsStringSync();
       Map<String, dynamic> tableMap =
           _handleTableStructList(fileName, fileContent);
-      tableStruct.add(tableMap);
+
+      if (null != tableMap) tableStruct.add(tableMap);
     });
 
     return tableStruct;
@@ -256,12 +275,13 @@ class DataBaseHelper {
   /// 从本地文件读取表结构与字段结构,正则匹配表结构与字段结构
   static Map<String, dynamic> _handleTableStructList(
       String fileName, String fileContent) {
-    String tableMetaAndClassName =
+    RegExpMatch regExpMatch =
         RegExp(r'@TableMeta.*?\{', multiLine: true, dotAll: true)
-            .firstMatch(fileContent)
-            .group(0)
-            .toString()
-            .trim();
+            .firstMatch(fileContent);
+    if (null == regExpMatch) return null;
+
+    String tableMetaAndClassName = regExpMatch.group(0).toString().trim();
+
     Map<String, dynamic> tableMap = _getTableMap(tableMetaAndClassName);
     tableMap['fieldList'] = [];
 
@@ -337,16 +357,14 @@ class DataBaseHelper {
     }
 
     if (!fieldMap.containsKey('length')) {
-      if (fieldMap['type'] == 'varchar') fieldMap['length'] = '255';
-      if (fieldMap['type'] == 'int') fieldMap['length'] = '11';
-      if (fieldMap['type'] == 'bigint') fieldMap['length'] = '20';
+      fieldMap['length'] = defaultLengthMap[fieldMap['type'].toString()];
     }
 
     if (!fieldMap.containsKey('comment')) {
       fieldMap['comment'] = '';
     }
 
-    if (fieldMap['type'] == 'varchar') {
+    if (fieldMap['type'] == 'varchar' || fieldMap['type'] == 'text') {
       if (!fieldMap.containsKey('character')) {
         fieldMap['character'] = 'utf8mb4';
       }
@@ -358,6 +376,8 @@ class DataBaseHelper {
 
     if (!fieldMap.containsKey('nullAble')) {
       fieldMap['nullAble'] = 'NO';
+    } else {
+      fieldMap['nullAble'] = fieldMap['nullAble'].toString().toUpperCase();
     }
 
     return fieldMap;
@@ -395,11 +415,19 @@ class DataBaseHelper {
     }
 
     if ('IS_NULLABLE' == keyItem) {
-      sql += ' NOT NULL';
+      if (valueItem.toString() == '' || valueItem.toString() == 'NO') {
+        sql += ' NOT NULL';
+      } else {
+        sql += ' NULL';
+      }
     }
 
     if ('COLUMN_DEFAULT' == keyItem) {
-      sql += ' DEFAULT \'' + valueItem.toString() + '\'';
+      if ('null' == valueItem.toString()) {
+        sql += ' DEFAULT NULL';
+      } else {
+        sql += ' DEFAULT \'' + valueItem.toString() + '\'';
+      }
     }
 
     if ('COLUMN_COMMENT' == keyItem) {
@@ -407,7 +435,7 @@ class DataBaseHelper {
     }
 
     if ('COLUMN_KEY' == keyItem) {
-      sql += valueItem.toString();
+      sql += ' ' + valueItem.toString();
     }
 
     return sql;
