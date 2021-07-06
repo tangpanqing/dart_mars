@@ -435,7 +435,7 @@ class DataBaseHelper {
     }
 
     if ('COLUMN_KEY' == keyItem) {
-      sql += ' ' + valueItem.toString();
+      //  sql += ' ' + valueItem.toString();
     }
 
     return sql;
