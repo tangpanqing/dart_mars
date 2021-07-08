@@ -49,7 +49,12 @@ class DataFieldHelper {
       sb.write(' COLLATE utf8mb4_general_ci');
     }
 
-    sb.write(' NOT NULL');
+    if (type != 'text') {
+      sb.write(' NOT NULL');
+    } else {
+      sb.write(' NULL');
+    }
+
     sb.write(_pareFieldDefault(m));
     sb.write(_pareFieldAutoIncrease(m));
     sb.write(_pareFieldComment(m));
@@ -65,6 +70,7 @@ class DataFieldHelper {
 
   static String _pareFieldType(Map<String, dynamic> m) {
     String type = m['type'].toString();
+    if ('text' == type) return ' text';
 
     String length =
         m.containsKey('length') ? m['length'].toString() : _defaultLength(type);

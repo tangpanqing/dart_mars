@@ -1,5 +1,6 @@
 import 'dart:io';
 
+// ignore: always_declare_return_types
 main() {
   File file1 = File(
       'D:\\vs_project\\dart_mars\\lib\\template\\bootstrap\\redis\\Redis.dart');
@@ -62,7 +63,7 @@ class ListHelper {
   }
 
   static List<String> unique(List<String> c) {
-    Set temp = Set();
+    Set temp = {};
     temp.addAll(c);
     return temp.map((e) => e.toString()).toList();
   }

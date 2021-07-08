@@ -177,9 +177,12 @@ class DbSqlBuilder {
 
     List<List<String>> list = [];
     try {
-      list = options["join"] as List<List<String>>;
+      list = (options["join"] as List<dynamic>)
+          .map((e) => e as List<String>)
+          .toList();
     } catch (e) {
-      throw 'list for parseJoin is not List<List<String>>';
+      throw 'list for parseJoin is not List<List<String>> , it is ' +
+          options["join"].runtimeType.toString();
     }
 
     return list

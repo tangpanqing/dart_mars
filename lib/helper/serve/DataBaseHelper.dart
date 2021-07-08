@@ -291,7 +291,7 @@ class DataBaseHelper {
     for (Match m in matchs) {
       String fieldMetaAndFieldName = m.group(0).toString();
       Map<String, dynamic> fieldMap = _getFieldMap(fieldMetaAndFieldName);
-      tableMap['fieldList'].add(fieldMap);
+      if (null != fieldMap) tableMap['fieldList'].add(fieldMap);
     }
 
     return tableMap;
@@ -347,6 +347,10 @@ class DataBaseHelper {
     });
 
     List<String> fieldNameSplit = fieldName.replaceFirst(';', '').split(' ');
+
+    if (fieldMap.containsKey('ignore') &&
+        fieldMap.containsKey('ignore').toString() == 'true') return null;
+
     if (!fieldMap.containsKey('type')) {
       if (fieldNameSplit[0] == 'String') fieldMap['type'] = 'varchar';
       if (fieldNameSplit[0] == 'int') fieldMap['type'] = 'int';
