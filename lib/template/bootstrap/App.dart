@@ -36,6 +36,8 @@ class App {
 
       configDatabase(serve, env);
 
+      _autoConnectDbPeriodic(env);
+
       Server.http(port, serve, env);
 
       if (env.containsKey('ssl') && env['ssl'].toString() == 'on') {
@@ -112,6 +114,20 @@ class App {
 
     return map;
   }
+
+  static void _autoConnectDbPeriodic(Map<String, dynamic> env) {
+    int dbConnectPeriodic = 20000;
+    if (env.containsKey("dbConnectPeriodic")) {
+      try {
+        dbConnectPeriodic = int.parse(env["dbConnectPeriodic"].toString());
+      } catch (e) {}
+    }
+
+    Timer.periodic(Duration(seconds: dbConnectPeriodic), (timer) async {
+      await Db.query("select 1", []);
+    });
+  }
+
 }
   ''';
 }
