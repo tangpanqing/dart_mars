@@ -9,7 +9,7 @@ class CompileHelper {
     } else {
       if ('aot' == type || 'jit' == type) type += '-snapshot';
       var str =
-          'dart compile $type bin\\' + PackageHelper.getPackageName() + '.dart';
+          'dart compile $type bin/' + PackageHelper.getPackageName() + '.dart';
       Shell().run(str);
     }
   }

@@ -19,7 +19,7 @@ class ServeHelper {
   }
 
   static void _runServe(List<String> arguments) {
-    var str = 'dart run bin\\' +
+    var str = 'dart run bin/' +
         PackageHelper.getPackageName() +
         '.dart ' +
         arguments.join(' ');
